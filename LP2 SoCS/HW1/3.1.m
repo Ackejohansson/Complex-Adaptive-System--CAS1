@@ -1,9 +1,9 @@
 %% Exercise 3.1
 clf, clc
-N=100;
+N=16;
 p=0.01;
 f=0.2;
-t = 1000000;
+t = 1000;
 figure(1)
 plot([0:N; 0:N], [0:N; 0:N])
 grid
