@@ -1,3 +1,14 @@
+%% 3.3 Test performance
+clc, clf
+N=16;
+alpha = 1.18;
+x = linspace(1,N^2,N^2);
+c = 1./(x.^(1-alpha));
+
+r =linspace(1,0,N^2);
+loglog(r,c,'o')
+
+
 %% 3.3
 clc, clf, clear
 N=16;
@@ -9,15 +20,3 @@ for k = 1:N^2
    c(k) = sum(p(k:end))/a;
 end
 loglog(n/N^2,c,'o')
-
-
-
-%% 3.3 Test performance
-clc, clf
-N=50;
-alpha = 1.18;
-x = linspace(0,1,N^2);
-r=linspace(N^2,0,N^2);
-c = x.^(1-alpha);
-
-loglog(r/N^2,1./c,'o')
