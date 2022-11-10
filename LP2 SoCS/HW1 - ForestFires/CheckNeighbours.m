@@ -2,7 +2,6 @@ function [forest, counter]=CheckNeighbours(forest,index,N,counter)
 i = index(1);
 j = index(2);
 counter = counter+1;
-
 % hold on
 % fill([0 1 1 0]+i-1, [0 0 1 1]+j-1, 'r')
 % hold off

@@ -1,6 +1,6 @@
-function fireSizes = SimulateForestFire(N,p,f,T)
-
+function [fireSizes, forestSizes] = SimulateForestFire(N,p,f,T)
 fireSizes=[];
+forestSizes=[];
 forest = zeros(N,N);
 for t=0:T
    for i=1:N
@@ -14,19 +14,8 @@ for t=0:T
        end
    end
    
-   if rand<f
-       index=[randi(N),randi(N)];
-       m = index(1);
-       n = index(2);
-       if forest(m,n)==1
-            forest(m,n)=-1;
-            counter = 0;
-            [forest, counter] = CheckNeighbours(forest,index,N,counter);
-            fireSizes(end+1) = counter;
-       end
-   end
+[fireSizes, forestSizes, forest] = LighthAndBurn(f,forest,fireSizes,forestSizes,N);
    %drawnow;
    forest(forest == -1)=0;
 end
-
 end

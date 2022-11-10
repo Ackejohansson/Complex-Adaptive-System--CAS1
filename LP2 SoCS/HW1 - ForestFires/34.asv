@@ -1,87 +1,26 @@
 %% ex 3.4
 clf, clc
-N=16;
+N=10;
 p=0.01;
 f=0.2;
 T = 5000;
-
-hax=gca;
-hax.XTick=0:1:N;
-hax.YTick=0:1:N;
-hax.GridAlpha = 1;
-axis square
-
-fireSizes=[];
-forest = zeros(N,N);
-for t=0:T
-   for i=1:N
-       for j=1:N
-          if rand<p
-              forest(i,j)=1;
-              %hold on
-              %fill([0 1 1 0]+i-1, [0 0 1 1]+j-1, 'g')
-              %hold off
-          end
-       end
-   end
-   
-   if rand<f
-       index=[randi(N),randi(N)];
-       m = index(1);
-       n = index(2);
-       if forest(m,n)==1
-            forest(m,n)=-1;
-            counter = 0;
-            [forest, counter] = CheckNeighbours(forest,index,N,counter);
-            fireSizes(end+1) = counter;
-       end
-   end
-   %drawnow;
-   forest(forest == -1)=0;
-end
+alpha = 1.18;
+[fireSizes, forestSizes] = SimulateForestFire(N,p,f,T);
 
 sortedFireSizes = sort(fireSizes, 'descend');
 n = (1:size(fireSizes,2))/size(fireSizes,2);
-loglog(sortedFireSizes/N^2,n,'o')
+%%
 
 
+% TODO FIT LINE 
+clf
 
+beta = 1-alpha;
 
+loglog(n,sortedFireSizes/N^2)
+hold on
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%     %%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [forest, counter]=CheckNeighbours(forest, index,N,counter)
-i = index(1);
-j = index(2);
-counter = counter+1;
+loglog(n,exp(n))
 
-% hold on
-% fill([0 1 1 0]+i-1, [0 0 1 1]+j-1, 'r')
-% hold off
-% drawnow;
+hold off
 
-if i-1>0 && forest(i-1,j)==1
-    forest(i-1,j)=-1;
-    [forest, counter]=CheckNeighbours(forest, [i-1,j],N,counter);
-end
-
-if i+1<=N && forest(i+1,j)==1
-    forest(i+1,j)=-1;
-    [forest, counter]=CheckNeighbours(forest, [i+1,j],N,counter);
-end
-
-if j-1>0 && forest(i,j-1)==1
-    forest(i,j-1)=-1;
-    [forest, counter]=CheckNeighbours(forest, [i,j-1],N,counter);
-end
-
-if j+1<=N && forest(i,j+1)==1
-    forest(i,j+1)=-1;
-    [forest, counter]=CheckNeighbours(forest, [i,j+1],N,counter);
-end
-% hold on
-% fill([0 1 1 0]+i-1, [0 0 1 1]+j-1,'w','Edgecolor', 'black')
-% drawnow;
-% hold off
-end
