@@ -14,10 +14,10 @@ loglog(n/N^2,c,'o')
 
 %% 3.3 Test performance
 clc, clf
-N=106;
+N=50;
 alpha = 1.18;
-n = linspace(1,N^2,N^2);
+x = linspace(0,1,N^2);
+r=linspace(N^2,0,N^2);
+c = x.^(1-alpha);
 
-c = n.^1/((1-alpha))
-loglog(n/N^2,c,'o')
-
+loglog(r/N^2,1./c,'o')
