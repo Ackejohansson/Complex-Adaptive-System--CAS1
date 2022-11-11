@@ -16,10 +16,10 @@ index = sortedFireSizes <0.2;
 x = sortedFireSizes(index);
 y = n(index);
 c = polyfit(log10(x),log10(y),1);
+beta = c(1);
 
-loglog(sortedFireSizes, 10^(c(2))*sortedFireSizes.^c(1))
-
-alpha=1-c(1)
+loglog(sortedFireSizes, 10^(c(2))*sortedFireSizes.^beta,'r')
+alpha=1-beta
 
 
 % Settings for alpha

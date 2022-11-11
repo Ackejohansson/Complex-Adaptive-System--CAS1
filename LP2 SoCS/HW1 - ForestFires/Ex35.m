@@ -3,7 +3,7 @@ clf, clc, clear
 
 % Settings
 N=130;
-T = 1000;
+T = 5000;
 p=0.01;
 f=0.2;
 
