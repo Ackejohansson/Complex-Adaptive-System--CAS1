@@ -1,5 +1,6 @@
 function [fireSizes, forestSizes, forest] = LighthAndBurn(f,forest,fireSizes,forestSizes,N)
-   if rand<f
+
+    if rand<f
        index=[randi(N),randi(N)];
        m = index(1);
        n = index(2);

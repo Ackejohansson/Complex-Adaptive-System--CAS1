@@ -1,23 +1,26 @@
 %% ex 3.4
-clf, clc, clear
+clf, clc
 N=10;
 p=0.01;
 f=0.2;
 T = 5000;
-
+alpha = 1.18;
 [fireSizes, forestSizes] = SimulateForestFire(N,p,f,T);
 
 sortedFireSizes = sort(fireSizes, 'descend');
 n = (1:size(fireSizes,2))/size(fireSizes,2);
 %%
+
+
+% TODO FIT LINE 
 clf
-%
-alpha = 1.18;
+
+beta = 1-alpha;
 
 loglog(n,sortedFireSizes/N^2)
 hold on
 
-x=linspace(1/N^2, 1,N^2);
-a = (x.^(1-alpha));
-a=a./a(1);
-plot(x,a,'r')
+%loglog(n,exp(n))
+%
+%hold off
+
