@@ -7,10 +7,10 @@ T = 1e5;
 p=0.01;
 f=0.2;
 
-% Forest with fires
+% Run a normal run
 [fireSizes, forestSizes] = SimulateForestFire(N,p,f,T);
 
-% Forest with randomly placed trees
+% Run with random trees
 randomFireSizes=[];
 for i = 1:length(forestSizes)
     randomForest=zeros(N,N);
@@ -34,8 +34,8 @@ for i = 1:length(forestSizes)
 end
 n = (1:size(fireSizes,2))/size(fireSizes,2);
 sortedRandomFireSizes = sort(randomFireSizes, 'descend');
-sortedFireSizes = sort(fireSizes, 'descend');   
-%% Make plot
+sortedFireSizes = sort(fireSizes, 'descend');
+%%
 clf
 
 loglog(sortedFireSizes/N^2,n,'b')
