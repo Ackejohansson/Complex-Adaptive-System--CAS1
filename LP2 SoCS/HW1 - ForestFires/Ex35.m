@@ -2,8 +2,8 @@
 clf, clc, clear
 
 % Settings
-N=130;
-T = 5000;
+N=256;
+T = 1e4;
 p=0.01;
 f=0.2;
 

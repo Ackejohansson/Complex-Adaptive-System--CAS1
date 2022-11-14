@@ -45,7 +45,7 @@ end
 
 if j+1>N && forest(i,1)==1
     forest(i,1)=-1;
-    [forest, counter]=CheckNeighbours(forest, [i,1],N,counter);
+    [forest, counter]=CheckNeighbours(forest, [i,j+1],N,counter);
 end
 % hold on
 % fill([0 1 1 0]+i-1, [0 0 1 1]+j-1,'w','Edgecolor', 'black')

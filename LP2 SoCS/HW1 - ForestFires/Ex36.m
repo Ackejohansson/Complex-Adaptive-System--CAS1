@@ -1,13 +1,15 @@
 %% 36
-clf, clc
+clf, clc, clear
 N=256;
 p=0.01;
 f=0.2;
-T = 10000;
+T = 1e4;
 
 [fireSizes, forestSizes] = SimulateForestFire(N,p,f,T);
+histogram(fireSizes)
 n = (1:size(fireSizes,2))/size(fireSizes,2);
 sortedFireSizes = sort(fireSizes, 'descend')./N^2;
+
 %%
 clf, clc
 loglog(sortedFireSizes,n,'b')
@@ -28,3 +30,4 @@ alpha=1-beta
 % a = (x.^(1-alpha));
 % a=a./a(1);
 % plot(x,a,'r')
+
