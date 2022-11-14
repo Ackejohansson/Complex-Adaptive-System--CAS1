@@ -1,14 +1,13 @@
-%%
-clf
-alpha=1.17;
+%% 3.3
+clf, clc, clear
+alpha=1.18;
 r=linspace(0,1,1000);
-p=r.^(1/(1-alpha));
+p=r.^(-alpha);
 
 plot(r,log(p))
 ylabel('log(p)')
 xlabel('n/N^2')
-legend('The power law distribution')
-title('The power law distribution over firesize')
+title('Power-law probability distribution: p(n) \propto x^{-\alpha}')
 
 %% 3.3 Test performance
 clc, clf
