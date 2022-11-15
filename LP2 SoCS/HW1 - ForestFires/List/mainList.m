@@ -17,9 +17,13 @@ hax.GridAlpha = 1;
 xlim([0 N])
 ylim([0 N])
 axis square
-%%
+
 [fireSizes, forestSizes] = SimulateForestFireList(N,p,f,T)
-%%
+%% 38
+
+
+[fireSizes, forestSizes] = SimulateForestFireList(N,p,f,T)
+
 sortedFireSizes = sort(fireSizes, 'descend');
 n = (1:size(fireSizes,2))/size(fireSizes,2);
 

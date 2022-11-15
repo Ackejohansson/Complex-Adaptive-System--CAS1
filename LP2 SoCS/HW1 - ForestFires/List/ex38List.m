@@ -1,15 +1,16 @@
-%% ex 3.8
+%% 38
 clf, clc, clear
-N = 64;
-T = 1e6;
+%N = 1024;
+T = 1e5;
 b = 2200;
-
 p=0.01;
 f=0.2;
 alpha=[];
-
+allaN = [512,1024];
+for o = 1:2
+N=allaN(o);
 for j=1:10
-[fireSizes, forestSizes] = SimulateForestFire(N,p,f,T);
+[fireSizes, forestSizes] = SimulateForestFireList(N,p,f,T);
 
 sortedFireSizes = sort(fireSizes, 'descend')./N^2;
 n = (1:size(fireSizes,2))/size(fireSizes,2);
@@ -24,8 +25,13 @@ y = y(b:end);
 c = polyfit(log10(x),log10(y),1);
 alpha(j)=1-c(1);
 end
-
-medel = mean(alpha)
+if N == 1024
+    medel1024 = mean(alpha)
+end
+if N == 512
+    meedeel512 = mean(alpha)
+end
+end
 %%
 clc
 N = [16, 32, 64, 128, 256];
@@ -33,17 +39,3 @@ N = [16, 32, 64, 128, 256];
 alpha = [1.2449, 1.2125, 1.1901, 1.1769, 1.1706];
 
 plot(1./N, log(alpha),'r')
-
-
-%%
-alpha=[1.24397710444642,1.21789044034107,1.18826438354351,1.17789151213903,1.16859806492203]
-allN=[16,32,64,128,256];
-
-plot(1./allN,log(alpha))
-
-% c = polyfit(log10(1./allN),log10(log(alpha)),1);
-% beta = c(1);
-% alpha=1-beta
-% 
-% loglog(1./allN, 10^(c(2))*1./allN.^beta,'r')
-
