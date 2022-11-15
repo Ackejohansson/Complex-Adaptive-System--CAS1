@@ -3,7 +3,7 @@ clf, clc
 N=16;
 p=0.01;
 f=0.2;
-T = 1e5;
+T = 1e3;
 figure(1)
 plot([0:N; 0:N], [0:N; 0:N])
 grid
@@ -39,8 +39,10 @@ for t=0:T
             fireSizes(end+1) = counter;
        end
    end
+   
    drawnow;
    forest(forest == -1)=0;
+
 end
 
 %%
