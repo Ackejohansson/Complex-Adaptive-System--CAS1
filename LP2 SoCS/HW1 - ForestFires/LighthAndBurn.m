@@ -1,5 +1,4 @@
 function [fireSizes, forestSizes, forest] = LighthAndBurn(f,forest,fireSizes,forestSizes,N)
-
     if rand<f
        index=[randi(N),randi(N)];
        m = index(1);
@@ -9,7 +8,7 @@ function [fireSizes, forestSizes, forest] = LighthAndBurn(f,forest,fireSizes,for
             forestSizes(end+1) = sum(sum(forest));
             forest(m,n)=-1;
             counter = 0;
-            [forest, counter] = CheckNeighbours(forest,index,N,counter);
+            [forest, counter] = CheckNeighboursList(forest,index,N,counter);
             fireSizes(end+1) = counter;
        end
    end
