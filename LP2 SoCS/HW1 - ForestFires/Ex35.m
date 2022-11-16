@@ -45,7 +45,3 @@ xlabel("n/N^2")
 ylabel("C(n)")
 legend("Forest grown with fires","Forest grown randomly")
 hold off
-
-
-
-

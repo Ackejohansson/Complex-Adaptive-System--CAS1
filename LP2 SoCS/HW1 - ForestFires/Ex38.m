@@ -14,7 +14,6 @@ for j=1:10
 sortedFireSizes = sort(fireSizes, 'descend')./N^2;
 n = (1:size(fireSizes,2))/size(fireSizes,2);
 
-%
 % clf
 index = sortedFireSizes < 0.20;
 x = sortedFireSizes(index);
@@ -24,26 +23,14 @@ y = y(b:end);
 c = polyfit(log10(x),log10(y),1);
 alpha(j)=1-c(1);
 end
-
 medel = mean(alpha)
-%%
+%% Infoga medel
 clc
 N = [16, 32, 64, 128, 256];
-%alpha = [1.2441, 1.2123, 1.1900  ,1.1706];
 alpha = [1.2449, 1.2125, 1.1901, 1.1769, 1.1706];
-
-plot(1./N, log(alpha),'r')
-
+plot(1./N, alpha,'r')
 
 %%
 alpha=[1.24397710444642,1.21789044034107,1.18826438354351,1.17789151213903,1.16859806492203]
 allN=[16,32,64,128,256];
-
-plot(1./allN,log(alpha))
-
-% c = polyfit(log10(1./allN),log10(log(alpha)),1);
-% beta = c(1);
-% alpha=1-beta
-% 
-% loglog(1./allN, 10^(c(2))*1./allN.^beta,'r')
-
+plot(1./allN,alpha)

@@ -48,4 +48,3 @@ txtCurve = 'Simulation of forest fires';
 txtFit = sprintf('Curve fitted: \\alpha = %.4f',alpha);
 legend(txtCurve,txtFit, 'Location','west')
 hold off
-    
