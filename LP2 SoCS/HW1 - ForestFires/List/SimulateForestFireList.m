@@ -15,7 +15,7 @@ for t=0:T
    end
 % pause(0.2)
 [fireSizes, forestSizes, forest, fire] = LightAndBurnList(f,forest,fireSizes,forestSizes,N);
-
+forest(forest == -1)=0;
 
 % For drawing 
 % if fire
