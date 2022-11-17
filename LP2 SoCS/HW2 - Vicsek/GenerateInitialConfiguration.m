@@ -1,7 +1,6 @@
-function [C, a,b] = GenerateInitialConfiguration(N,L)
-    C = zeros(L,L);
-    while sum(sum(C)) < N
-        C(randi(numel(C))) = 1;
-    end
-    [a,b] = find(C==1);
+function population = GenerateInitialConfiguration(N,L)
+    x = rand(N,1)*L;
+    y = rand(N,1)*L;
+    theta = rand(N,1)*2*pi;
+    population = [x,y,theta];
 end
