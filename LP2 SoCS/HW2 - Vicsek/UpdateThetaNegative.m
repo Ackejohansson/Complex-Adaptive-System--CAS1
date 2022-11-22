@@ -1,20 +1,18 @@
-function [population,averageTheta] = UpdateThetaNegative(population,noise,deltat,N,R,h,t,s,averageTheta)
+function [population,averageTheta] = UpdateThetaNegative(population,eta,dt,N,R,h,t,s,averageTheta,M)
+x=population(:,1);
+y=population(:,2);
 theta=population(:,3);
-tmpAverageTheta=zeros(N,1);
+newTheta = zeros(N,1);
 
-for i=1:N
-    x=population(i,1);
-    y=population(i,2);
-
-    visibility = sqrt((x-population(:,1)).^2+(y-population(:,2)).^2);  
-    inRadius=visibility < R;
-
-    nominator=mean(sin(theta(inRadius)));
-    denominator=mean(cos(theta(inRadius)));
-    tmpAverageTheta(i,1)=atan2(nominator,denominator);
+for j = 1:N
+    distances = sqrt( (M(:,1)-x(j,1)).^2 + (M(:,2)-y(j,1)).^2);
+    inRadius = distances < R;
+    inRadius = sum(reshape(inRadius, N,9),2);
+    inRadius = logical(inRadius);
+    
+    newTheta(j) = angle(sum(exp(theta(inRadius)*1i)));
 end
-
-averageTheta(:,t)=tmpAverageTheta;
+averageTheta(:,t) = newTheta;
 
 if (h>0 && t-h<=0) || (h<0 && t-s<1)
     population=population(:,3);
@@ -30,6 +28,6 @@ elseif h<0 && t-s>0
     averageTheta(:,t-h) = atand(c);
 end
 
-population = averageTheta(:,t-h)+noise*(rand(N,1)-0.5)*deltat;
+population(:,3) = averageTheta(:,t-h)+eta*(rand(N,1)-0.5)*dt;
 
 end
