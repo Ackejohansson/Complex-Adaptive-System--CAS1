@@ -1,0 +1,90 @@
+%% 11.1
+clc, clf, clear all
+
+% Settings
+N = 200;
+L = 15;
+
+% 
+gamma = 0.10;
+d = 0.8;
+beta = 0.5;
+
+% Initialize population
+agents = zeros(N,3);
+agents(:,1:2) = randi(L,N,2);
+agents(1:10,3) = -1;
+
+while sum(agents(:,3)==-1)>0
+    agents = walk(agents,d,L);
+    agents = Infect(agents,beta);
+    agents = Recover(agents,gamma);
+    DrawPlot(agents,L)
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+function agents = walk(agents,d,L)
+for i=1:length(agents)
+    if rand < d
+        switch randi(4)
+            case 1
+                agents(i,1:2) = agents(i,1:2)+[1,0];
+            case 2
+                agents(i,1:2) = agents(i,1:2)+[0,1];
+            case 3
+                agents(i,1:2) = agents(i,1:2)+[-1,0];
+            case 4
+                agents(i,1:2) = agents(i,1:2)+[0,-1];
+            otherwise
+                error("Move out of bounce")
+        end
+    end
+end
+tmpAgents = agents(:,1:2);
+tmpAgents(tmpAgents>L) = tmpAgents(tmpAgents>L)-L;
+tmpAgents(tmpAgents<0) = tmpAgents(tmpAgents<0)+L;
+agents = [tmpAgents, agents(:,3)];
+end
+
+function agents = Infect(agents,beta)
+index = agents(:,3) == -1;
+infected = agents(index,1:2);
+for i = 1:size(infected,1)
+    [indx,~] = find(ismember(agents(:,1:2),infected(i,:),'rows'));
+    for k=1:length(indx)
+       if agents(indx(k),3) == 0
+           if rand < beta
+            agents(indx(k),3) = -1;
+           end
+       end
+    end
+end
+end
+
+function agents = Recover(agents,gamma)
+I = agents(:,3) == -1;
+for i=1:length(agents)
+    if I(i)==1
+        if rand < gamma
+            agents(i,3) = 1;
+        end
+    end
+end
+end
+
+function DrawPlot(agents,L)
+I = agents(:,3) == -1;
+S = agents(:,3) == 0;
+R = agents(:,3) == 1;
+clf
+plot(agents(I,1),agents(I,2),'r.')
+hold on
+plot(agents(S,1),agents(S,2),'b.')
+plot(agents(R,1),agents(R,2),'g.')
+axis([0 L 0 L])
+drawnow;
+end
+% 11.2, 11.3, 11.4
