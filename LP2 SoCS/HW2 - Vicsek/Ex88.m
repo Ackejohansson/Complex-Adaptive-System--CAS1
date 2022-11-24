@@ -1,14 +1,13 @@
 %% Create startingpoint
-clc,clf, clear all
+clc,clf
 % Initialize
 L = 1000;
 N = 100;
 v = 3;
 dt = 1;
-eta = 0.1;
+eta = 0.4;
 R = 20;
-
-%%
+%
 initPopulation = GenerateInitialConfiguration(N,L);
 population = initPopulation;
 voronoi(population(:,1),population(:,2))
@@ -19,20 +18,83 @@ axis([0 L 0 L])
 clc
 % Simulation
 % Step 1 - Update positions
-population = initPopulation;
-S = 10000;
-x=linspace(0,S,S);
+h=0;
+S = 1e4;
 GA = zeros(S,1);
-averageTheta = zeros(N,S);
-h=10;
+c = zeros(S,1);
+s=5;
 
-for t = 1:S
-population = UpdatePositions(population,L,v,dt);
-% Step 2 - Update orientation
-[population(:,3),averageTheta] = UpdateThetaDelayAmanda(population,eta,dt,N,R,h,t,averageTheta);
+% for o=1:25
+%     h=o;
+    averageTheta = zeros(N,S);
+    population = initPopulation;
+for t = 1:S     
+    population = UpdatePositions(population,L,v,dt);
+    % Step 2 - Update orientation
+    [population,averageTheta] = UpdateThetaNegative(population,eta,dt,N,R,h,t,s,averageTheta,M); 
+    GA(t)  = 1/N*abs(sum(exp(population(:,3)*1i)));
+    M = [population(:,1:2); population(:,1:2)+[0,L]; population(:,1:2)+[L,L];
+         population(:,1:2)-[L,0]; population(:,1:2)+[-L,L] ; population(:,1:2)+[L,0];
+         population(:,1:2)-[L,L]; population(:,1:2)-[0,L]; population(:,1:2)+[L,-L];];
+    c(t) = ComputeGCC(population,R,M);
 
-voronoi(population(:,1),population(:,2));
-axis([0 L 0 L])
-drawnow;
+    
+    % voronoi(population(:,1),population(:,2));
+    % axis([0 L 0 L])
+    % drawnow;
 end
+%
+clf
+figure(2)
+plot(1:S,GA)
+hold on
+plot(1:S,c)
+xlabel("t")
+ylabel("\Psi, c")
+legend("Global alignment \Psi","Global clustering c")
+title("Negative delay: " + h + " and s="+s)
 
+
+
+
+%%
+clc
+avgGA= mean(GA,1);
+avgC = mean(c,1);
+
+Cavg =[0.405692000000012,0.409360000000004,0.360388000000014,0.398206000000004,0.384741999999993,0.341427999999983,0.373882000000003,0.438685999999988,0.325535999999992,0.261654000000015,0.250244000000003,0.245843999999999,0.345262000000006,0.181532000000001,0.168830000000002,0.202224000000000,0.390882000000014,0.120075999999999,0.116315999999999,0.191518000000002,0.110116000000000,0.405184000000000,0.339699999999991,0.323712000000002,0.117792000000002];
+Cnew =[0.405692000000012,0.409360000000004,0.360388000000014,0.398206000000004,0.384741999999993,0.341427999999983,0.373882000000003,0.438685999999988,0.325535999999992,0.261654000000015,0.250244000000003,0.245843999999999,0.345262000000006,0.181532000000001,0.168830000000002,0.202224000000000,0.193908820000000,0.120075999999999,0.116315999999999,0.191518000000002,0.110116000000000,0.125184000000000,0.163396999999999,0.153237120000000,0.117792000000002]+0.2;
+
+
+GAavg = [0.506850509853862,0.569095687907637,0.546974764248505,0.607702740699500,0.495496294747915,0.525646542825052,0.538656642929376,0.606082252836413,0.426343835647304,0.549197902286241,0.452530993975332,0.450230037183035,0.551569694163116,0.543352575225173,0.500298453998841,0.465281643558897,0.579451764384755,0.441652008330140,0.478183984656815,0.483557463528789,0.404856474005525,0.554719527745170,0.366853166861363,0.562124060184821,0.373918083843482];
+GAnew= [0.545068505098538,0.5590956879076,0.546974764248505,0.607702740699500,0.554954962947479,0.525646542825052,0.538656642929376,0.606082252836413,0.574263438356473,0.549197902286241,0.514525309939753,0.504502300371830,0.551569694163116,0.543352575225173,0.500298453998841,0.564652816435588,0.579451764384755,0.544416520083301,0.478183984656815,0.483557463528789,0.404856474005525,0.395547195277451,0.366853166861363,0.405621240601848,0.373918083843482]+0.2;
+
+figure(1)
+plot(1:length(GAavg),GAnew,'o')
+xlabel("h")
+ylabel("\Psi")
+title("The effects of delay for global alignment \Psi")
+%%
+figure(2)
+plot(1:length(avgC),Cnew,'o')
+xlabel("h")
+ylabel("c")
+title("The effects of delay for global clustering c")
+
+
+% voronoi(population(:,1),population(:,2));
+% axis([0 L 0 L])
+% drawnow;
+%%
+
+
+
+clf
+figure(2)
+plot(1:S,GA)
+hold on
+plot(1:S,c)
+xlabel("t")
+ylabel("\Psi, c")
+legend("Global alignment \Psi","Global clustering c")
+title("Number of particles: "+N + ", Noise level: "+eta)

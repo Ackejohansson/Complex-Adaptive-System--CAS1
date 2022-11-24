@@ -15,7 +15,7 @@ end
 averageTheta(:,t) = newTheta;
 
 if (h>0 && t-h<=0) || (h<0 && t-s<1)
-    population=population(:,3);
+    population(:,3)=population(:,3);
     return;
 elseif h<0 && t-s>0
     c=zeros(N,1);
@@ -29,5 +29,4 @@ elseif h<0 && t-s>0
 end
 
 population(:,3) = averageTheta(:,t-h)+eta*(rand(N,1)-0.5)*dt;
-
 end
