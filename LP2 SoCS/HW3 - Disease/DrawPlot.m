@@ -1,9 +1,13 @@
-function DrawPlot(agents,L,I,S,R)
+function [S,I,R] = DrawPlot(agents,L)
+I = agents(:,3) == -1;
+S = agents(:,3) == 0;
+R = agents(:,3) == 1;
+    
 clf
-plot(agents(I(:,end),1),agents(I(:,end),2),'r.')
+plot(agents(I,1),agents(I,2),'r.')
 hold on
-plot(agents(S(:,end),1),agents(S(:,end),2),'b.')
-plot(agents(R(:,end),1),agents(R(:,end),2),'g.')
+plot(agents(S,1),agents(S,2),'b.')
+plot(agents(R,1),agents(R,2),'g.')
 axis([0 L 0 L])
 drawnow;
 end
