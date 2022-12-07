@@ -1,16 +1,17 @@
 %% Main Ants 15.1
 clc,clear
-N=10;
+N = 10;
 maxNrOfConnections = 4;
 tau0 = 0.1;
-startNode=1;
+startNode = 1;
 k=N-1;
 
 [nodes,M,D,W] = InitializePopulation(N,maxNrOfConnections);
 pheromoneLevel = InitializePheromoneLevels(M,tau0,N);
 path = GeneratePath(M,startNode,k)
 pathLength = ComputeDistance(D,path)
-simplifiedPath = SimplifyPath(path)
+simplifiedPath = SimplifyPath(path,k)
+
 
 
 %%%%%%%%%%%%%%%%%%    FUNKTIONER        %%%%%%%%%%%%%%%%%%%%%%%%%%%
