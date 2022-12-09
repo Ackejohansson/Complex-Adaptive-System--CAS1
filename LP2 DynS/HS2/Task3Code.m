@@ -57,3 +57,4 @@ l3=exp(e3);
 trace=e1+e2+e3
 [l1,l2,l3]
 
+
