@@ -1,0 +1,435 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     15420,        426]
+NotebookOptionsPosition[     14709,        399]
+NotebookOutlinePosition[     15172,        417]
+CellTagsIndexPosition[     15129,        414]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Exercise Session 4", "Section",
+ CellChangeTimes->{{3.783938682781506*^9, 3.783938696780694*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Problem 2.4", "Subsection",
+ CellChangeTimes->{{3.783938700900041*^9, 3.783938708364092*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "flow", " ", "in", " ", "lecture", " ", "notes", " ", "7.3", ".3"}], " ", 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"\[Mu]val", " ", "=", " ", 
+     RowBox[{"-", "0.8"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"flow", " ", "=", " ", 
+     RowBox[{"{", 
+      RowBox[{"y", ",", 
+       RowBox[{
+        RowBox[{"\[Mu]", " ", "y"}], " ", "+", " ", "x", "-", 
+        RowBox[{"x", "^", "2"}], "+", 
+        RowBox[{"x", " ", "y"}]}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"StreamPlot", "[", 
+     RowBox[{
+      RowBox[{"flow", "/.", 
+       RowBox[{"\[Mu]", "\[Rule]", "\[Mu]val"}]}], ",", 
+      RowBox[{"{", 
+       RowBox[{"x", ",", 
+        RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"y", ",", 
+        RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "]"}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.783932880626049*^9, 3.783932975996183*^9}, {
+   3.7839345407979803`*^9, 3.7839346179360113`*^9}, {3.783934714066082*^9, 
+   3.78393472990786*^9}, 3.783938677900292*^9, {3.783939888980957*^9, 
+   3.783939927569312*^9}, {3.78394760284431*^9, 3.7839476099178057`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"find", " ", "fixed", " ", "points"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"fpsols", " ", "=", " ", 
+     RowBox[{"Solve", "[", 
+      RowBox[{
+       RowBox[{"flow", "\[Equal]", "0"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", "y"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"stabmat", " ", "=", " ", 
+     RowBox[{
+      RowBox[{"D", "[", 
+       RowBox[{"flow", ",", 
+        RowBox[{"{", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", "y"}], "}"}], "}"}]}], "]"}], "/.", 
+      RowBox[{"%", "[", 
+       RowBox[{"[", "1", "]"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"stabmat", "//", "MatrixForm"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"find", " ", "unstable", " ", "direction"}], " ", "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"eigsys", " ", "=", " ", 
+     RowBox[{"Eigensystem", "[", "stabmat", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"unstabexponent", " ", "=", " ", 
+     RowBox[{"eigsys", "[", 
+      RowBox[{"[", 
+       RowBox[{"1", ",", "2"}], "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   
+   RowBox[{
+    RowBox[{"unstabdirection", " ", "=", " ", 
+     RowBox[{"eigsys", "[", 
+      RowBox[{"[", 
+       RowBox[{"2", ",", "2"}], "]"}], "]"}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.7839347737506523`*^9, 3.783934931400895*^9}, {
+   3.783934962674534*^9, 3.783935043156146*^9}, 3.783939250523505*^9, 
+   3.78394004652114*^9, {3.78394011655337*^9, 3.7839401191937723`*^9}, {
+   3.7839405499436407`*^9, 3.7839406040389423`*^9}, {3.783940659662075*^9, 
+   3.783940691933733*^9}, {3.783947612972926*^9, 3.783947614466763*^9}, 
+   3.7839476802458067`*^9, {3.7839482128643007`*^9, 3.7839482293582993`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"dynsys", " ", "=", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"x", "'"}], "[", "t", "]"}], "\[Equal]", " ", 
+       RowBox[{"y", "[", "t", "]"}]}], ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"y", "'"}], "[", "t", "]"}], "==", 
+       RowBox[{
+        RowBox[{"\[Mu]", " ", 
+         RowBox[{"y", "[", "t", "]"}]}], "+", " ", 
+        RowBox[{"x", "[", "t", "]"}], "-", 
+        RowBox[{
+         RowBox[{"x", "[", "t", "]"}], "^", "2"}], "+", 
+        RowBox[{
+         RowBox[{"x", "[", "t", "]"}], 
+         RowBox[{"y", "[", "t", "]"}]}]}]}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "start", " ", "trajectory", " ", "in", " ", "unstable", " ", "direction", 
+    " ", "of", " ", "saddle"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"sol", "[", 
+    RowBox[{"\[Mu]dummy_", ",", "T_"}], "]"}], ":=", 
+   RowBox[{"Quiet", "@", 
+    RowBox[{"NDSolve", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Join", "[", 
+        RowBox[{"dynsys", ",", 
+         RowBox[{"Thread", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"x", "[", "0", "]"}], ",", 
+             RowBox[{"y", "[", "0", "]"}]}], "}"}], "\[Equal]", 
+           RowBox[{"0.001", "*", "unstabdirection"}]}], "]"}]}], "]"}], "/.", 
+       
+       RowBox[{"\[Mu]", "\[Rule]", "\[Mu]dummy"}]}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"x", "[", "t", "]"}], ",", 
+        RowBox[{"y", "[", "t", "]"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"t", ",", "0", ",", "T"}], "}"}]}], "]"}]}]}], ";"}]}], "Input",\
+
+ CellChangeTimes->{{3.783934659253107*^9, 3.783934763147818*^9}, {
+   3.783935047236342*^9, 3.783935245778727*^9}, {3.783935280892325*^9, 
+   3.7839354205054626`*^9}, {3.7839356468006783`*^9, 3.783935672624982*^9}, {
+   3.783935734875413*^9, 3.783935736058947*^9}, 3.78393584594235*^9, {
+   3.78394094249398*^9, 3.7839409454972353`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"critical", " ", "value", " ", "\[Mu]c"}], "=", 
+     RowBox[{"-", "0.8645"}]}], ",", " ", 
+    RowBox[{"see", " ", "Lecture", " ", "notes"}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"\[Mu]val", " ", "=", " ", 
+     RowBox[{"-", "0.9"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Tmax", " ", "=", " ", "200"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Show", "[", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"StreamPlot", "[", 
+        RowBox[{
+         RowBox[{"flow", "/.", 
+          RowBox[{"\[Mu]", "\[Rule]", "\[Mu]val"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", 
+           RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"y", ",", 
+           RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "]"}], ","}], "*)"}], 
+     RowBox[{"ParametricPlot", "[", 
+      RowBox[{
+       RowBox[{"Evaluate", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"x", "[", "t", "]"}], ",", 
+           RowBox[{"y", "[", "t", "]"}]}], "}"}], "/.", 
+         RowBox[{"sol", "[", 
+          RowBox[{"\[Mu]val", ",", "Tmax"}], "]"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"t", ",", "0", ",", "Tmax"}], "}"}], ",", 
+       RowBox[{"PlotStyle", "\[Rule]", "Red"}], ",", 
+       RowBox[{"PlotRange", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}], "]"}], "]"}], 
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.783935212986476*^9, 3.7839352199455633`*^9}, {
+   3.783935428552937*^9, 3.783935644223568*^9}, {3.7839356788960123`*^9, 
+   3.783935701962859*^9}, {3.783935761163327*^9, 3.783935822302003*^9}, {
+   3.7839360193559923`*^9, 3.783936022355255*^9}, 3.783939253092358*^9, {
+   3.7839409933526173`*^9, 3.783941056790224*^9}, {3.783941095134871*^9, 
+   3.78394118516637*^9}, {3.783941257653482*^9, 3.783941307027212*^9}, {
+   3.7839415013006697`*^9, 3.7839415654841423`*^9}, {3.783941616290453*^9, 
+   3.7839416988529663`*^9}, {3.783947623195908*^9, 3.783947645796569*^9}, {
+   3.783948238230422*^9, 3.783948243399275*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "find", " ", "way", " ", "to", " ", "estimate", " ", "\[Gamma]", " ", 
+    "from", " ", "the", " ", "data"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"\[Mu]val", " ", "=", " ", 
+     RowBox[{"-", "0.865"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Tmax", " ", "=", " ", "1000"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"ParametricPlot", "[", 
+     RowBox[{
+      RowBox[{"Evaluate", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"x", "[", "t", "]"}], ",", 
+          RowBox[{"y", "[", "t", "]"}]}], "}"}], "/.", 
+        RowBox[{"sol", "[", 
+         RowBox[{"\[Mu]val", ",", "Tmax"}], "]"}]}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"t", ",", "0", ",", "Tmax"}], "}"}], ",", 
+      RowBox[{"PlotStyle", "\[Rule]", "Red"}], ",", 
+      RowBox[{"PlotRange", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}], "]"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Plot", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Evaluate", "[", 
+         RowBox[{
+          RowBox[{"x", "[", "t", "]"}], "/.", 
+          RowBox[{"sol", "[", 
+           RowBox[{"\[Mu]val", ",", "Tmax"}], "]"}]}], "]"}], ",", 
+        RowBox[{"Evaluate", "[", 
+         RowBox[{
+          RowBox[{"y", "[", "t", "]"}], "/.", 
+          RowBox[{"sol", "[", 
+           RowBox[{"\[Mu]val", ",", "Tmax"}], "]"}]}], "]"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"t", ",", 
+        RowBox[{"Tmax", "-", "50"}], ",", "Tmax"}], "}"}], ",", 
+      RowBox[{"PlotStyle", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{"Blue", ",", "Red"}], "}"}]}]}], "]"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+      "turns", " ", "out", " ", "that", " ", "\[Gamma]", " ", "should", " ", 
+       "be", " ", "given", " ", "by", " ", "the", " ", "value", " ", "of", 
+       " ", 
+       RowBox[{"x", "[", "t", "]"}], " ", "when", " ", 
+       RowBox[{"y", "[", "t", "]"}]}], "\[Equal]", "0"}], ",", " ", 
+     RowBox[{"for", " ", "the", " ", "current", " ", "flow"}], ",", 
+     RowBox[{
+     "this", " ", "condition", " ", "may", " ", "be", " ", "different", " ", 
+      "in", " ", "the", " ", "homework", " ", "problem"}]}], 
+    "*)"}]}]}]], "Input",
+ CellChangeTimes->{{3.783936034987727*^9, 3.78393611865443*^9}, {
+   3.783936459720459*^9, 3.78393648114526*^9}, {3.783936541720463*^9, 
+   3.783936653176322*^9}, 3.783936750721549*^9, {3.7839368549743347`*^9, 
+   3.783936872333557*^9}, {3.7839371076940928`*^9, 3.783937115885141*^9}, {
+   3.7839372002402678`*^9, 3.783937221662594*^9}, {3.783937290378098*^9, 
+   3.783937290618013*^9}, {3.783939257159597*^9, 3.7839392640858717`*^9}, {
+   3.783942333270287*^9, 3.783942393975376*^9}, {3.783947649997344*^9, 
+   3.783947658236207*^9}, {3.783948259567156*^9, 3.783948346699416*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"use", " ", "Reap"}], ",", " ", "Sow", ",", " ", 
+    RowBox[{
+    "and", " ", "WhenEvent", " ", "to", " ", "extract", " ", "minimum", " ", 
+     "distance", " ", "and", " ", "period", " ", "time"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"trajtime", "[", 
+      RowBox[{"\[Mu]dummy_", ",", "T_"}], "]"}], ":=", 
+     RowBox[{"Reap", "@", 
+      RowBox[{"NDSolve", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Join", "[", 
+          RowBox[{"dynsys", ",", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"x", "[", "0", "]"}], "==", 
+              RowBox[{"0.001", "*", 
+               RowBox[{"unstabdirection", "[", 
+                RowBox[{"[", "1", "]"}], "]"}]}]}], ",", 
+             RowBox[{
+              RowBox[{"y", "[", "0", "]"}], "\[Equal]", 
+              RowBox[{"0.001", "*", 
+               RowBox[{"unstabdirection", "[", 
+                RowBox[{"[", "2", "]"}], "]"}]}]}], ",", 
+             RowBox[{"WhenEvent", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"y", "[", "t", "]"}], "\[Equal]", "0"}], ",", 
+               RowBox[{"Sow", "[", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"x", "[", "t", "]"}], ",", "t"}], "}"}], "]"}]}], 
+              "]"}]}], "}"}]}], "]"}], "/.", 
+         RowBox[{"\[Mu]", "\[Rule]", "\[Mu]dummy"}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"x", "[", "t", "]"}], ",", 
+          RowBox[{"y", "[", "t", "]"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"t", ",", "0", ",", "T"}], "}"}]}], "]"}]}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"trajtime", "[", 
+      RowBox[{
+       RowBox[{"-", "0.87"}], ",", "1000"}], "]"}], "[", 
+     RowBox[{"[", 
+      RowBox[{"2", ",", "1"}], "]"}], "]"}], ";"}], 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+     "now", " ", "you", " ", "can", " ", "take", " ", "the", " ", "last", " ",
+       "values", " ", "of", " ", "this", " ", "list", " ", "to", " ", 
+      "calculate", " ", "\[Gamma]", " ", "and", " ", "the", " ", "period", 
+      " ", "T\[Mu]", " ", "as", " ", "a", " ", "function", " ", "of"}], " ", 
+     "|", 
+     RowBox[{"\[Mu]", "-", "\[Mu]c"}], "|", "."}], " ", "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{"make", " ", "a", " ", 
+      RowBox[{"LogLogPlot", "[", "]"}], " ", "of", " ", "\[Gamma]", " ", 
+      "over"}], " ", "|", 
+     RowBox[{"\[Mu]", "-", "\[Mu]c"}], "|"}], "*)"}]}]}]], "Input",
+ CellChangeTimes->{{3.783937449800308*^9, 3.78393755408974*^9}, {
+   3.783937597059304*^9, 3.783937671357102*^9}, {3.7839377290997267`*^9, 
+   3.7839377546251163`*^9}, {3.783937885719287*^9, 3.783937902496505*^9}, {
+   3.783937940942754*^9, 3.783938007688879*^9}, {3.78393804038667*^9, 
+   3.78393812254921*^9}, 3.783938673910316*^9, {3.783943839523094*^9, 
+   3.783943844199519*^9}, {3.783943874947771*^9, 3.783943887640563*^9}, 
+   3.783947668996994*^9, {3.783948354137679*^9, 3.783948467901309*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1710, 1042},
+WindowMargins->{{Automatic, -1852}, {Automatic, 44}},
+Magnification:>2. Inherited,
+FrontEndVersion->"10.3 for Mac OS X x86 (32-bit, 64-bit Kernel) (December 10, \
+2015)",
+StyleDefinitions->FrontEnd`FileName[{"Report"}, "StandardReport.nb", 
+  CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 103, 1, 131, "Section"],
+Cell[CellGroupData[{
+Cell[708, 27, 99, 1, 63, "Subsection"],
+Cell[810, 30, 1234, 32, 196, "Input"],
+Cell[2047, 64, 1876, 49, 306, "Input"],
+Cell[3926, 115, 2048, 57, 229, "Input"],
+Cell[5977, 174, 2377, 60, 240, "Input"],
+Cell[8357, 236, 3153, 79, 339, "Input"],
+Cell[11513, 317, 3168, 78, 377, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
