@@ -7,5 +7,6 @@ for i = 1:size(simplifiedPath,1)
         deltaTau(path(j+1),path(j)) = deltaTau(path(j+1),path(j)) + Q./pathLength(i);
     end
 end
+tau(tau<1e-4) = 0;
 tau = tau*(1-rho)+ deltaTau;
 end

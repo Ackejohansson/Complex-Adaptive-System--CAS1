@@ -56,7 +56,6 @@ while length(path)<k
 end
 end
 
-
 function pathLength = ComputeDistance(D,path)
 pathLength=0;
 for i=1:length(path)-1

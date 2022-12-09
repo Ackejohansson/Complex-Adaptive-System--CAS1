@@ -1,7 +1,7 @@
 function [nodes,connections,distance, weights,pheromones]=InitializePopulationSquare(N,startNode,endNode)
 figure(1)
 [row,col]=ind2sub([sqrt(N) sqrt(N)],1:N);
-nodes=[row' col']%+(2*rand(N,2)-1)/5;
+nodes=[row' col']+(2*rand(N,2)-1)/5;
 plot(nodes(:,1),nodes(:,2),'.','MarkerSize',14,'Color','k'); hold on
 
 connections=zeros(N);

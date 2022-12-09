@@ -3,7 +3,7 @@ clc, clear all, clf
 N=20^2;
 nrAnts = 20;
 maxNrSteps = 500;
-S=70;
+S=100;
 
 alpha = 0.7;
 beta = 1;
@@ -17,11 +17,9 @@ shortestPathLength = inf;
 
 
 [nodes,M,D,W,tau] = InitializePopulationSquare(N,startNode,endNode);
-%PlotConfig(nodes,shortestPath,startNode,endNode)
 
 % Main loop
 for n = 1:S
-n
 paths = GeneratePaths(nrAnts,maxNrSteps,alpha,beta,W,tau,startNode,endNode);
 simplifiedPath = SimplifyPath(paths,maxNrSteps);
 [pathLength, indexShortestPath] = ComputePathLength(simplifiedPath,D);
@@ -32,15 +30,11 @@ if pathLength(indexShortestPath) < shortestPathLength
     PlotConfigSquare(nodes,N,shortestPath,startNode,endNode)
 end
 tau = ComputePheromoneLevels(simplifiedPath,tau,rho,Q,pathLength);
-plotPheromones(nodes,tau,startNode,endNode)
+%plotPheromonesSquare(nodes,tau,startNode,endNode)
 end
-%%
-PlotConfigSquare(nodes,N,shortestPath,startNode,endNode)
-title('Noisy lattice with 100 ants, 200 iterations and \alpha=1.5')
-plotPheromoneLevels(nodes,shortestPath)
 
 %%
-function plotPheromones(nodes,pheromones,startNode,endNode)
+function plotPheromonesSquare(nodes,pheromones,startNode,endNode)
 pheromones(pheromones<1e-5) = 0;
 hold on
 plot(nodes(startNode,1),nodes(startNode,2),'o',"MarkerEdgeColor",'g','MarkerSize',14)
