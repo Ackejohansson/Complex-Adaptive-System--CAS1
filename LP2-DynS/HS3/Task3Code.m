@@ -1,4 +1,4 @@
-%% HomeSet 3 task 3
+%% Main
 clear, clc
 sigma = 10;
 beta = 8/3;
@@ -12,15 +12,14 @@ x1 = 1;
 x2 = 2;
 x3 = 3;
 f = @(t, var) [sigma*(var(2)-var(1)); r*var(1)-var(2)-var(1)*var(3);var(1)*var(2)-beta*var(3)];
-
 [t,x] = ode45(f,0:1:10,[x1;x2;x3]);
-plot3(x(:,1),x(:,2),x(:,3),'MarkerSize',2);
+
 n = length(t);
 
 % Starting loop from this initial condition
 x1 = x(n,1); x2 = x(n,2); x3 = x(n,3);
 
-[t,x] = ode45(f,0:dt:T,[x1;x2;x3]);
+[t,x] = ode45(f,[0:dt:T],[x1;x2;x3]);
 e1=0;
 e2=0;
 e3=0;

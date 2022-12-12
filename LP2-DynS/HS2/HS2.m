@@ -1,11 +1,9 @@
 %% 3.3
-
-
 clear
 close all
-sigma = 10;
-b = 8/3;
-r = 0.32;
+sigma = 16;
+b = 5;
+r = 320;
 
 threshold = 30000;
 deltaT = 0.0001;
@@ -69,6 +67,7 @@ while timeStep <= threshold
     iter = iter+1;
     tempIter = tempIter + 1;
 end
+%%
 %lambdaFin1 = sum(lambda(1,:))/(timeStep-transientBuffer*deltaT);
 %lambdaFin2 = sum(lambda(2,:))/(timeStep-transientBuffer*deltaT);
 %lambdaFin3 = sum(lambda(3,:))/(timeStep-transientBuffer*deltaT);
@@ -78,6 +77,6 @@ lambdaArray(1,:) = cumsum(lambda(1,(transientBuffer+1):iter-1))./(((transientBuf
 lambdaArray(2,:) = cumsum(lambda(2,(transientBuffer+1):iter-1))./(((transientBuffer+1):iter-1)*deltaT);
 lambdaArray(3,:) = cumsum(lambda(3,(transientBuffer+1):iter-1))./(((transientBuffer+1):iter-1)*deltaT);
 
-plot3(var(:,1),var(:,2),var(:,3))
+%plot3(var(:,1),var(:,2),var(:,3))
 semilogx(transientBuffer+1:iter-1,lambdaArray)
-sum(lambdaFinSum);
+%sum(lambdaFinSum);
