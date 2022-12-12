@@ -30,7 +30,7 @@ def compute_eig(points, sigma, b, r, dt, t_max, N):
                                  [r-points[index, 2], -1, -points[index, 0]],
                                  [points[index, 1], points[index, 0], -b]])*dt
         Q, R = np.linalg.qr(np.matmul(M, Q))
-        eigenvalues += np.log(np.abs(np.array([R[0, 0], R[1, 1], R[2, 2]])))
+        eigenvalues += np.log(np.abs(np.diag(R)))
         lambda_history[index] = eigenvalues/(index+1)
     eigenvalues /= t_max
     lambda_history /= dt
@@ -43,8 +43,9 @@ def plot_eigenvalues(lambda_history):
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     ax.set_xscale('log')
     ax.plot(lambda_history[:, 0], 'b', label=r'$\lambda_1$')
-    ax.plot(lambda_history[:, 1], 'b', label=r'$\lambda_2$')
-    ax.plot(lambda_history[:, 2], 'b', label=r'$\lambda_3$')
+    ax.plot(lambda_history[:, 1], 'g', label=r'$\lambda_2$')
+    ax.plot(lambda_history[:, 2], 'r', label=r'$\lambda_3$')
+    plt.legend(loc="best")
     plt.title("Eigenvalues over time")
     plt.xlabel("Time t")
     plt.ylabel("Eigenvalues")
@@ -55,9 +56,9 @@ def plot_eigenvalues(lambda_history):
 def main():
     t_max = 10
     dt = 10**-4
-    sigma = 16
-    b = 5
-    r = 320
+    sigma = 10
+    b = 3
+    r = 28
     N = int(t_max/dt)
 
     # Create initial transient and take last point
