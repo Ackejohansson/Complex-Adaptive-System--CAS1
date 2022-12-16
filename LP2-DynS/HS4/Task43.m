@@ -38,12 +38,10 @@ end
 [D, DqOfq] = FitPolynomial(Iq, epsilon, Qlist);
 
 % c) Boxcounting, information and correlation
-D(1,1)
-disp("D1: " + D(1,1) + "D two: " + D(2,1) + "D three: " + D(3,1))
+disp("[D1,D2,D3]= [" + D(1,1) + ", " + D(2,1) + ", " + D(3,1)+"]")
 
 
 % e) Lyaponov exponents 
-clc
 lambda = zeros(2,1);
 Q = eye(2);
 for k=1:length(xList(end,:))  
@@ -53,7 +51,7 @@ for k=1:length(xList(end,:))
 end
 lambda = sort(lambda /length(xList(end,:)), 'descend');
 DL = 1 - lambda(1)/lambda(2)
-Lyapunov_exponents =sprintf('lambda1: %f, $lambda2$: %f',lambda(1),lambda(2))
+Lyapunov_exponents =sprintf('Lambda1: %f, lambda2: %f',lambda(1),lambda(2))
 
 
 
