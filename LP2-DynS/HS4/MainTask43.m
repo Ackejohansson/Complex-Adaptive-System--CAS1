@@ -7,12 +7,11 @@ b = 0.3;
 nrOfInitConditions = 1000;
 nrOfIterations = 2000;
 transient = 10;
-nTot = nrOfInitConditions*(nrOfIterations-transient);
 
 % Create trajectory
 [xList, yList] = CreateHenonMap(a,b,nrOfInitConditions,nrOfIterations,transient);
 
-nEpsilons = 15;
+nEpsilons = 10;
 epsilon = linspace(1e-3, 1e-2,nEpsilons);
 Qlist = [0,1,2, linspace(0.1,4,nEpsilons-3)];
 Iq = zeros(nEpsilons,nEpsilons);
@@ -49,11 +48,11 @@ for k=1:length(xList(end,:))
     lambda = lambda + log(abs(diag(R)));
 end
 lambda = sort(lambda /length(xList(end,:)), 'descend');
-
 fprintf('Lyapunov exponents are %c%c = %.3f, %c%c = %.3f \n',955,8321,lambda(1),955,8322,lambda(2))
+
+% f) DL
 DL = 1 - lambda(1)/lambda(2);
 disp("DL = " + DL)
-
 
 %% Plots
 % Plots Heinon attractor
