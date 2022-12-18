@@ -1,5 +1,5 @@
 %% Task 4.3
-clc, clear all
+clear all, clc
 
 % Settings
 a = 1.4;
