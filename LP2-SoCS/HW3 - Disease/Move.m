@@ -1,22 +1,13 @@
 function agents = Move(agents,d,L)
-for i=1:length(agents)
-    if rand < d
-        switch randi(4)
-            case 1
-                agents(i,1:2) = agents(i,1:2)+[1,0];
-            case 2
-                agents(i,1:2) = agents(i,1:2)+[0,1];
-            case 3
-                agents(i,1:2) = agents(i,1:2)+[-1,0];
-            case 4
-                agents(i,1:2) = agents(i,1:2)+[0,-1];
-            otherwise
-                error("Move out of bounce")
-        end
-    end
-end
+move = (rand(length(agents),1) < d).*randi(4,length(agents),1);
+
+agents(move == 1,1) = agents(move == 1,1) +1;
+agents(move == 2,2) = agents(move == 2,2) +1;
+agents(move == 3,1) = agents(move == 3,1) -1;
+agents(move == 4,2) = agents(move == 4,2) -1;
+
 tmpAgents = agents(:,1:2);
 tmpAgents(tmpAgents>L) = tmpAgents(tmpAgents>L)-L;
 tmpAgents(tmpAgents<0) = tmpAgents(tmpAgents<0)+L;
-agents = [tmpAgents, agents(:,3)];
+agents(:,1:2) = tmpAgents;
 end
