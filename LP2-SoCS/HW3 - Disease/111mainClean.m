@@ -4,12 +4,16 @@ clc, clf, clear, close
 % Population settings
 N = 1000;
 L = 100;
+percentageInitiallyInfected = 0.01;
 
-% Disease settings
+% Initialize agents
+agents = [randi(L,N,2), zeros(N,1)];
+agents(1:N*percentageInitiallyInfected,3) = -1;
+
+%%%%% Disease settings %%%%%%%%%
 infectionRate = 0.6;   % beta
 
 % 11.1
-initI = 0.01;
 movementProb = 0.8;     % d
 recoveryRate = 0.02;    % gamma
 
@@ -18,10 +22,6 @@ deathProb = 0.0001;   % mu
 
 %11.3
 suseptableProb = 0.01; % alpha
-
-%Initialize population
-agents = [randi(L,N,2), zeros(N,1)];
-agents(1:N*initI,3) = -1;
 
 I = []; S=[]; R=[]; D=[];
 while sum(agents(:,3)==-1)>0
