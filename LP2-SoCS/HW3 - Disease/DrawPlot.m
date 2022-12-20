@@ -1,9 +1,7 @@
-function DrawPlot(agents,L,S,I,R)    
+function DrawPlot(agents,L)    
 clf
-plot(agents(I,1),agents(I,2),'r.','MarkerSize',10)
-hold on
-plot(agents(S,1),agents(S,2),'b.','MarkerSize',10)
-plot(agents(R,1),agents(R,2),'g.','MarkerSize',10)
+gscatter(agents(:,1),agents(:,2), agents(:,3),['r'; 'b'; 'g'])
+legend(gca,'off');
 axis([0 L 0 L])
 drawnow;
 end

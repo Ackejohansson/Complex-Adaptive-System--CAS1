@@ -34,16 +34,12 @@ while sum(agents(:,3)==-1)>0
     agents = Die(agents, deathProb);
     agents = Recover(agents,recoveryRate);
     agents = FromRtoS(agents,suseptableProb);
-
-    s = agents(:,3) == 0;
-    i = agents(:,3) == -1;
-    r = agents(:,3) == 1;
     
-    DrawPlot(agents,L,s,i,r);
+    DrawPlot(agents,L);
  
-    S(1,end+1) = sum(s);
-    I(1,end+1) = sum(i);
-    R(1,end+1) = sum(r);
+    S(1,end+1) = sum(agents(:,3) == 0);
+    I(1,end+1) = sum(agents(:,3) == -1);
+    R(1,end+1) = sum(agents(:,3) == 1);
     D(1,end+1) = N-(S(end)+I(end)+R(end));  
 end
 
