@@ -29,13 +29,12 @@ agents(:,1:2) = randi(L,N,2);
 agents(1:N*initI,3) = -1;
 
 while sum(agents(:,3)==-1)>0
-    tic
     agents = Move(agents,movementProb,L);
     agents = Infect(agents,infectionRate);
     agents = Die(agents, deathProb);
     agents = Recover(agents,recoveryRate);
     agents = FromRtoS(agents,suseptableProb);
-    
+
     s = agents(:,3) == 0;
     i = agents(:,3) == -1;
     r = agents(:,3) == 1;
@@ -46,7 +45,6 @@ while sum(agents(:,3)==-1)>0
     I(1,end+1) = sum(i);
     R(1,end+1) = sum(r);
     D(1,end+1) = N-(S(end)+I(end)+R(end));  
-    toc
 end
 
 %% Plot evolution
