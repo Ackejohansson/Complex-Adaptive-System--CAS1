@@ -1,6 +1,6 @@
 %% Main
-%
-clc, clf, clear
+clc, clf, clear, close
+
 % Population settings
 N = 1000;
 L = 100;
@@ -20,14 +20,10 @@ deathProb = 0.0001;   % mu
 suseptableProb = 0.01; % alpha
 
 %Initialize population
-I = [];
-S=[];
-R=[];
-D=[];
-agents = zeros(N,3);
-agents(:,1:2) = randi(L,N,2);
+agents = [randi(L,N,2), zeros(N,1)];
 agents(1:N*initI,3) = -1;
 
+I = []; S=[]; R=[]; D=[];
 while sum(agents(:,3)==-1)>0
     agents = Move(agents,movementProb,L);
     agents = Infect(agents,infectionRate);
