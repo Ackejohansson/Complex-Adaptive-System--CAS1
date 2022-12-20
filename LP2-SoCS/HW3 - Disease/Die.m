@@ -1,8 +1,5 @@
 function agents = Die(agents, mu)
-[index,~] = find(agents(:,3) == -1);
-for i = 1:length(index)
-   if rand < mu
-       agents(index(i),:) = [];
-       index=index-1;
-   end
+infected = agents(:,3) == -1;
+index=(rand(size(agents,1),1)<mu) & infected;
+agents(index,:)=[];
 end
