@@ -28,17 +28,16 @@ s=5;
 %     h=o;
     averageTheta = zeros(N,S);
     population = initPopulation;
-for t = 1:S     
+for t = 1:S    
+    M = [population(:,1:2);       population(:,1:2)+[0,L];  population(:,1:2)+[L,L];
+         population(:,1:2)-[L,0]; population(:,1:2)+[-L,L]; population(:,1:2)+[L,0];
+         population(:,1:2)-[L,L]; population(:,1:2)-[0,L];  population(:,1:2)+[L,-L];];
     population = UpdatePositions(population,L,v,dt);
     % Step 2 - Update orientation
-    [population,averageTheta] = UpdateThetaNegative(population,eta,dt,N,R,h,t,s,averageTheta,M); 
+    population = UpdateTheta(population,N,R,eta,dt,M);
     GA(t)  = 1/N*abs(sum(exp(population(:,3)*1i)));
-    M = [population(:,1:2); population(:,1:2)+[0,L]; population(:,1:2)+[L,L];
-         population(:,1:2)-[L,0]; population(:,1:2)+[-L,L] ; population(:,1:2)+[L,0];
-         population(:,1:2)-[L,L]; population(:,1:2)-[0,L]; population(:,1:2)+[L,-L];];
     c(t) = ComputeGCC(population,R,M);
 
-    
     % voronoi(population(:,1),population(:,2));
     % axis([0 L 0 L])
     % drawnow;
@@ -66,7 +65,7 @@ ylabel("\Psi")
 title("The effects of delay for global alignment \Psi")
 %
 figure(2)
-plot(1:length(avgCavgCCnew,'o')
+plot(1:length(avgCavgCCnew,'o'))
 xlabel("h")
 ylabel("c")
 title("The effects of delay for global clustering c")

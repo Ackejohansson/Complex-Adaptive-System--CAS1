@@ -23,7 +23,7 @@ R = 1;
 population = initPopulation;
 GA = zeros(S,1);
 c = zeros(S,1);
-k=1;
+k=0;
 
 for t = 1:S
     population = UpdatePositions(population,L,v,dt);
@@ -32,7 +32,6 @@ for t = 1:S
          population(:,1:2)-[L,L]; population(:,1:2)-[0,L]; population(:,1:2)+[L,-L];];
     population = UpdateThetaNearest(population,N,R,eta,dt,M,k);
 
-    % Compute GA an Local
     GA(t)  = 1/N*abs(sum(exp(population(:,3)*1i)));
     c(t) = ComputeGCC(population,R,M);
     
@@ -46,10 +45,10 @@ end
 %%
 
 voronoi(M(:,1),M(:,2));
-    axis([0 L 0 L])
-    title("\Psi: " + GA(t) + " at time: "+ t)
-    xlabel("t")
-    ylabel("\Psi, c")
+axis([0 L 0 L])
+title("\Psi: " + GA(t) + " at time: "+ t)
+xlabel("t")
+ylabel("\Psi, c")
 legend("Global alignment \Psi","Global clustering c")
 %%
 clf

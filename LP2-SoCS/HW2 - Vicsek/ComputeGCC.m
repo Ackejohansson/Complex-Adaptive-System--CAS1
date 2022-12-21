@@ -1,14 +1,11 @@
 function c = ComputeGCC(population,R,M)
 N=length(population);
-counter=0;
 A = pi*R^2;
 [V,indexEdge] = voronoin(M);
+area = zeros(N,1);
 for i=1:N
     P = V(indexEdge{i},:);
-    [~, area] = convhull(P(:,1),P(:,2));
-    if area < A
-       counter = counter+1; 
-    end
+    [~, area(i)] = convhull(P(:,1),P(:,2));
 end
-c = counter/N;
+c = sum(area < A)/N;
 end
