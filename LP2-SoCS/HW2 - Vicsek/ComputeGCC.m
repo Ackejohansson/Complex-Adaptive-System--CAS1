@@ -6,5 +6,5 @@ for i=1:N
     P = V(indexEdge{i},:);
     [~, area(i)] = convhull(P(:,1),P(:,2));
 end
-c = sum(area < pi*R^2)/N;
+c = mean(area < pi*R^2);
 end
