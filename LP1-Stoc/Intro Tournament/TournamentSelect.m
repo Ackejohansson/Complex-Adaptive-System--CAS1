@@ -10,7 +10,4 @@ elseif fitness(iTmp1) < fitness(iTmp2) && rand > pTournament
 else
     iSelected = iTmp2;
 end
-end
-
-            
-           
+end  
