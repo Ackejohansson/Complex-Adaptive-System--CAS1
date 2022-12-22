@@ -1,5 +1,5 @@
 %%
-clc
+clc, clear all
 constants = [-1, 3, 1];
 nConstants=length(constants);
 nVariables = 7;
@@ -21,7 +21,6 @@ f = LoadFunctionData;
 
 while maximumFitness < 10000 || Generation > 30000
     fitnessList = zeros(1,populationSize);
-
     for i = 1:populationSize
         chromosome = population(i).Chromosome;
         [fitnessList(i),funcEstimate] = EvaluateIndividual(chromosome,nVariables,constants);
@@ -55,6 +54,7 @@ while maximumFitness < 10000 || Generation > 30000
             tempPopulation(i+1,:) = chromo2;
         end
     end
+
     
     tempPopulation(1,:) = population(iBestIndividual,:);
     for i = 2:populationSize
