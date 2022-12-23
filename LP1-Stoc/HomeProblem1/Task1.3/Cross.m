@@ -1,14 +1,9 @@
 function newIndividuals = Cross(individual1, individual2)
-numberOfGenes = size(individual1,2);
-crossoverPoint = 1 + fix(rand*(numberOfGenes-1));
-newIndividuals = zeros(2, numberOfGenes);
+nGenes = size(individual1,2);
+newIndividuals = zeros(2, nGenes);
 
-for i=1:numberOfGenes
-    if i<=crossoverPoint
-        newIndividuals(1,i) = individual1(i);
-        newIndividuals(2,i) = individual2(i);
-    else
-        newIndividuals(1,i) = individual2(i);
-        newIndividuals(2,i) = individual1(i);
-    end
+crossoverPoint = randi(nGenes-1);
+crossover = 1:nGenes <= crossoverPoint;
+newIndividuals(1,:) = [individual1(crossover), individual2(~crossover)];
+newIndividuals(2,:) = [individual2(crossover), individual1(~crossover)];
 end
