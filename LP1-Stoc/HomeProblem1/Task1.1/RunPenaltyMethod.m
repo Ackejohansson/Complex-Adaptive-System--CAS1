@@ -1,3 +1,4 @@
+%%
 clear all
 clc, clf
 
@@ -19,6 +20,3 @@ plot(muValues,x(:,1))
 plot(muValues,x(:,2))
 legend({'x_1','x_2'},'Location','southwest')
 hold off
-
-
-
