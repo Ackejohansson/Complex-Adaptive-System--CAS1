@@ -1,16 +1,24 @@
+# ANN
 LP1-ANN/ExamPrep/Bok ANN.pdf
+
+# Stoc
 LP1-Stoc/Bok Stok.pdf
 
+# DynS
 LP2-DynS/Bok DynSys.pdf
 LP2-DynS/Wolfram problemset/
 LP2-DynS/Lectures/
 LP2-DynS/OldExams/
-LP2-DynS/HS3/Task 3.3/.idea/
-LP2-DynS/HS3/Task 3.3/__pycache__/
 
+# SoCS
 LP2-SoCS/Bok SoCS.pdf
 LP2 SoCS/HW1 - ForestFires/Figures/
 
+# CompBio
 LP3-CompBio/Bok CompBio.pdf
 
+
+# Python
 venv/
+__pycache__/
+.idea/
