@@ -7,9 +7,11 @@ LP2-DynS/Lectures/
 LP2-DynS/OldExams/
 LP2-DynS/HS3/Task 3.3/.idea/
 LP2-DynS/HS3/Task 3.3/__pycache__/
-LP2-DynS/HS3/Task 3.3/venv/
+#LP2-DynS/HS3/Task 3.3/venv/
 
 LP2-SoCS/Bok SoCS.pdf
 LP2 SoCS/HW1 - ForestFires/Figures/
 
 LP3-CompBio/Bok CompBio.pdf
+
+venv/
