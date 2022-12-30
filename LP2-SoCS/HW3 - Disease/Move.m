@@ -12,5 +12,3 @@ tmpAgents(tmpAgents>L) = tmpAgents(tmpAgents>L)-L;
 tmpAgents(tmpAgents<0) = tmpAgents(tmpAgents<0)+L;
 agents(:,1:2) = tmpAgents;
 end
-
-
