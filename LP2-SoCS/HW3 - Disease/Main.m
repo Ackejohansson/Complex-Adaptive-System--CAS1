@@ -15,13 +15,13 @@ infectionRate = 0.6;   % beta
 
 % 11.1
 movementProb = 0.8;     % d
-recoveryRate = 0.02;    % gamma
+recoveryRate = 0.01;    % gamma
 
 % 11.2
 deathProb = 0.0001;   % mu
 
 %11.3
-suseptableProb = 0.01; % alpha
+suseptableProb = 0.02; % alpha
 
 I = []; S=[]; R=[]; D=[];
 while sum(agents(:,3)==-1)>0

@@ -1,6 +1,7 @@
 %%
+clc
 clear all
 
-A = [-1, -1; 3 , 2]
-
-aTranspose = A'
+syms x r sigma z y
+A = [-sigma, sigma, 0; r-z, -1, -x; y, x, -1];
+det(A)/sigma
