@@ -25,7 +25,7 @@ def simulation(q, u, dt, rho, time_steps):
     return u
 
 
-def draw(u, time_steps):
+def draw_b(u, time_steps):
     plt.figure()
     plt.plot(u[0, :, :])
     plt.show()
@@ -49,7 +49,7 @@ def main():
     u = ramp(u0, xi, xi_0, L, time_steps, dt)
     u = simulation(q, u, dt, rho, time_steps)
 
-    draw(u, time_steps)
+    draw_b(u, time_steps)
 
 
 if __name__ == '__main__':
