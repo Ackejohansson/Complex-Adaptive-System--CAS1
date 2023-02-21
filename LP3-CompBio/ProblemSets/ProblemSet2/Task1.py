@@ -11,7 +11,7 @@ def ramp(u0, xi, xi_0, L, time_steps, dt):
 
 
 def simulation(q, u, dt, rho, time_steps):
-    h = 1
+    h = 3
     for t in range(int(time_steps / dt - 1)):
         u[:,0,t+1] = u[:,0,t] + dt * (
                 rho*u[:,0,t] * (1-u[:,0,t]/q) - u[:,0,t]/(1+u[:,0,t]))
@@ -19,8 +19,8 @@ def simulation(q, u, dt, rho, time_steps):
         u[:,-1,t+1] = u[:,-1,t] + dt * (
                 rho*u[:,-1,t] * (1-u[:,-1,t]/q) - u[:,-1,t]/(1+u[:,-1,t]))
 
-        u[:,1:-1,t+1] = u[:,1:-1,t] + dt * (
-                rho*u[:,1:-1,t] * (1-u[:,1:-1,t]/q) - u[:,1:-1,t] / (1+u[:,1:-1,t]) +
+        u[:,h:-h,t+1] = u[:,h:-h,t] + dt * (
+                rho*u[:,h:-h,t] * (1-u[:,h:-h,t]/q) - u[:,h:-h,t] / (1+u[:,h:-h,t]) +
                 (u[:,:-h-1,t] + u[:,h+1:,t] - 2*u[:,h:-h,t])/h**2)
     return u
 
