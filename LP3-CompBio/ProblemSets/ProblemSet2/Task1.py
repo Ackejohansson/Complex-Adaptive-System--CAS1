@@ -17,10 +17,10 @@ def simulation(q, u, dt, rho, time_steps):
                 rho*u[:,0,t] * (1-u[:,0,t]/q) - u[:,0,t]/(1+u[:,0,t]))
 
         u[:,-1,t+1] = u[:,-1,t] + dt * (
-                rho * u[:,-1,t] * (1-u[:,-1,t]/q) - u[:,-1,t]/(1+u[:,-1,t]))
+                rho*u[:,-1,t] * (1-u[:,-1,t]/q) - u[:,-1,t]/(1+u[:,-1,t]))
 
-        u[:,h:-h,t+1] = u[:,h:-h,t] + dt * (
-                rho * u[:,h:-h,t] * (1-u[:,h:-h,t]/q) - u[:,h:-h,t] / (1+u[:,h:-h,t]) +
+        u[:,1:-1,t+1] = u[:,1:-1,t] + dt * (
+                rho*u[:,1:-1,t] * (1-u[:,1:-1,t]/q) - u[:,1:-1,t] / (1+u[:,1:-1,t]) +
                 (u[:,:-h-1,t] + u[:,h+1:,t] - 2*u[:,h:-h,t])/h**2)
     return u
 
@@ -48,7 +48,6 @@ def main():
 
     u = ramp(u0, xi, xi_0, L, time_steps, dt)
     u = simulation(q, u, dt, rho, time_steps)
-
     draw_b(u, time_steps)
 
 
