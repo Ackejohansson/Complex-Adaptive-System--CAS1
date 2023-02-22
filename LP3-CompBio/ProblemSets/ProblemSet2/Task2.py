@@ -12,11 +12,11 @@ def update_u(u, b, v, a, dt):
 
 
 def update_v(u, b, v, Dv, dt):
-    return (b*u - u**2*v + Dv[3]*laplace(v))*dt
+    return (b*u - u**2*v + Dv[0]*laplace(v))*dt
 
 
 def main():
-    time_steps = 1000
+    time_steps = 5000
     dt = 1/100
     L = 128
     Du = 1
@@ -36,7 +36,7 @@ def main():
 
     plt.figure()
     plt.imshow(u, plt.cm.winter)
-    plt.figure()
+    plt.show()
     plt.imshow(v, plt.cm.winter)
     plt.show()
 
