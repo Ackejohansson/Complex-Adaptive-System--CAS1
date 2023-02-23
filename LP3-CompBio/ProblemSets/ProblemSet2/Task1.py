@@ -29,19 +29,18 @@ def simulation(q, u, dt, rho, time_steps):
         u[:, 1:-1, t + 1] = u[:, 1:-1, t] + dt * (
                 rho * u[:, 1:-1, t] * (1 - u[:, 1:-1, t] / q) - u[:, 1:-1, t] / (1 + u[:, 1:-1, t]) +
                 (u[:, :-2, t] + u[:, 2:, t] - 2 * u[:, 1:-1, t]))
-
     return u
 
 
 def draw_b(u, time_steps, dt):
-    #plt.figure()
-    #plt.plot(u[0, :, :])
-    plt.show()
-    print(len(u))
     for j in range(len(u)):
         plt.figure()
-        for i in np.linspace(0, 0.2*time_steps / dt - 1, 30):
+        plt.xlabel(r"$\xi$")
+        plt.ylabel("Wave u")
+        for i in np.linspace(0, time_steps/dt-1, 30):
             plt.plot(u[j, :, int(i)])
+
+    plt.legend()
     plt.show()
 
 
@@ -53,7 +52,6 @@ def wave_speed(u, dt):
 
 def main():
     rho = .5
-    q = 8
     L = 100
     q = 8
     xi = np.arange(1, L + 1)
@@ -65,7 +63,7 @@ def main():
     dt = 1/100
     u = ramp(u0, xi, xi_0, L, time_steps, dt)
     u = simulation(q, u, dt, rho, time_steps)
-    #draw_b(u, time_steps, dt)
+    draw_b(u, time_steps, dt)
 
     uc0 = np.array([u0[0], u0[0]*3])
     xic_0 = np.array([50, 50])
