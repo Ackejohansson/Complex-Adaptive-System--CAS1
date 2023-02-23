@@ -15,24 +15,28 @@ def calculate_r(theta, N):
 
 
 def main():
+    gamma = .1
     N = np.array([20, 100, 300])
     N = 20
-    gamma = .1
     Kc = 2 * gamma
+    K = np.array([0.08,1.01, 2])*Kc
     dt = 1/100
     time_max = 50
-    r = np.zeros(int(time_max/dt))
+    r = np.zeros((3,int(time_max/dt)))
 
-    K = Kc*0.08
-    omega = cauchy.rvs(scale=0.1, size=N) * gamma / np.pi
+    omega = cauchy.rvs(scale=0.1, size=N) * gamma / np.pi #TODO change this guy
     theta = np.random.uniform(low=-np.pi/2, high=np.pi/2, size=N)
 
-    for t in range(int(time_max/dt)):
-        theta = update_theta(theta, K, N, omega, dt)
-        r[t] = calculate_r(theta, N)
-
-    plt.plot(r)
+    fig, axes = plt.subplots(1,3, constrained_layout=True, figsize=(10,3))
+    for i,k in enumerate(K):
+        ax = axes[i]
+        for t in range(int(time_max/dt)):
+            theta = update_theta(theta, k, N, omega, dt)
+            r[i,t] = calculate_r(theta, N)
+        ax.set_title(f"K={K[i]}")
+        ax.plot(r[i, :])
     plt.show()
+
 
 if __name__ == '__main__':
     main()
