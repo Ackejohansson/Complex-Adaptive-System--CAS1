@@ -51,20 +51,28 @@ def ramp_c(uc0, xi, xic_0, time_steps, dt, L):
     return uc
 
 
+def growth_rate(u, q, rho):
+    return rho * u * (1 - u / q)
+
+
+def carrying_capacity(u):
+    return u / (1 + u)
+
+
+def diffusion(u, t):
+    return u[:, :-2, t] + u[:, 2:, t] - 2 * u[:, 1:-1, t]
+
+
 def simulation(q, u, dt, rho, time_steps):
     for t in range(int(time_steps / dt - 1)):
-        u[:, 0, t + 1] = u[:, 0, t] + dt * (
-                rho * u[:, 0, t] * (1 - u[:, 0, t] / q) - u[:, 0, t] / (1 + u[:, 0, t]) + (u[:, 1, t] - u[:, 0, t]).T)
+        u_start = u[:, 0, t]
+        u[:, 0, t + 1] = u_start + dt * (growth_rate(u_start, q, rho) - carrying_capacity(u_start)+(u[:, 1, t]-u_start))
 
-        u[:, -1, t + 1] = u[:, -1, t] + dt * (
-                rho * u[:, -1, t] * (1 - u[:, -1, t] / q) - u[:, -1, t] / (1 + u[:, -1, t]) -
-                (u[:, -1, t] - u[:, -2, t]))
+        u_end = u[:, -1, t]
+        u[:, -1, t + 1] = u_end + dt * (growth_rate(u_end, q, rho) - carrying_capacity(u_end) - (u_end - u[:, -2, t]))
 
         u_t = u[:, 1:-1, t]
-        growth_rate = rho * u_t * (1 - u_t / q)
-        carrying_capacity = u_t / (1 + u_t)
-        diffusion = (u[:, :-2, t] + u[:, 2:, t] - 2 * u_t)
-        u[:, 1:-1, t + 1] = u_t + dt * (growth_rate - carrying_capacity + diffusion)
+        u[:, 1:-1, t + 1] = u_t + dt * (growth_rate(u_t, q, rho) - carrying_capacity(u_t) + diffusion(u, t))
     return u
 
 
