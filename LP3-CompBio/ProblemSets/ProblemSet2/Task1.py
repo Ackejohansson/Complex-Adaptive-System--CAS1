@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 
 def ramp(u0, xi, xi_0, L, time_steps, dt):
     u = np.zeros((3, L, int(time_steps / dt)))
-    u[0, :, 0] = u0[0] / (1 + np.exp(xi - xi_0[0]))
-    u[1, :, 0] = u0[1] / (1 + np.exp(xi - xi_0[1]))
-    u[2, :, 0] = u0[2] / (1 + np.exp(xi - xi_0[2]))
+    u[:, :, 0] = u0 / (1 + np.exp(xi - xi_0[:, None]))
     return u
 
 
@@ -37,9 +35,8 @@ def draw_b(u, time_steps, dt):
         plt.figure()
         plt.xlabel(r"$\xi$")
         plt.ylabel("Wave u")
-        for i in np.linspace(0, time_steps/dt-5, 30):
+        for i in np.linspace(0, time_steps / dt - 5, 30):
             plt.plot(u[j, :, int(i)])
-
     plt.legend()
     plt.show()
 
@@ -49,9 +46,24 @@ def draw_c(u, time_steps, dt):
         plt.figure()
         plt.xlabel(r"$\xi$")
         plt.ylabel("Wave u")
-        for i in np.linspace(0, time_steps/dt*0.85, 20):
+        for i in np.linspace(0, time_steps / dt * 0.2, 20):
             plt.plot(u[j, :, int(i)])
     plt.legend()
+    plt.show()
+
+
+def draw_traveling_wave(u):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), constrained_layout=True)
+    ax1.plot(u[0, :, 30000])
+    ax1.set_xlabel(r"$\xi$")
+    ax1.set_ylabel("u")
+    ax1.set_title('Travelling wave')
+
+    v = np.diff(u[0, :, 30000])
+    ax2.plot(v, u[0, :-1, 20000])
+    ax2.set_xlabel(r"$\frac{du}{d\xi}$")
+    ax2.set_ylabel("u")
+    ax2.set_title('Phase plane')
     plt.show()
 
 
@@ -67,33 +79,22 @@ def main():
     q = 8
     xi = np.arange(1, L + 1)
     xi_0 = np.array([20, 50, 50])
-    u0 = np.array([(q - 1) / 2 + np.sqrt(((q - 1) / 2) ** 2 - q * (1 - rho) / rho),
-                   (q - 1) / 2 - np.sqrt(((q - 1) / 2) ** 2 - q * (1 - rho) / rho),
-                   1.1 * ((q - 1) / 2 - np.sqrt(((q - 1) / 2) ** 2 - q * (1 - rho) / rho))])
-    time_steps = 301
+    u0 = np.array([[(q - 1) / 2 + np.sqrt(((q - 1) / 2) ** 2 - q * (1 - rho) / rho)],
+                   [(q - 1) / 2 - np.sqrt(((q - 1) / 2) ** 2 - q * (1 - rho) / rho)],
+                   [1.1 * ((q - 1) / 2 - np.sqrt(((q - 1) / 2) ** 2 - q * (1 - rho) / rho))]])
+    time_steps = 300
     dt = 1 / 100
-    #u = ramp(u0, xi, xi_0, L, time_steps, dt)
-    #u = simulation(q, u, dt, rho, time_steps)
-    #draw_b(u, time_steps, dt)
+    u = ramp(u0, xi, xi_0, L, time_steps, dt)
+    u = simulation(q, u, dt, rho, time_steps)
+    draw_b(u, time_steps, dt)
 
-    uc0 = np.array([u0[0], u0[0]*3])
+    uc0 = np.array([u0[0], u0[0] * 3])
     xic_0 = np.array([50, 50])
     uc = ramp_c(uc0, xi, xic_0, time_steps, dt, L)
     uc = simulation(q, uc, dt, rho, time_steps)
+
     draw_c(uc, time_steps, dt)
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), constrained_layout=True)
-    #ax1.plot(u[0, :, 30000])
-    ax1.set_xlabel(r"$\xi$")
-    ax1.set_ylabel("u")
-    ax1.set_title('Travelling wave')
-
-    v = np.diff(u[0, :, 30000])
-    ax2.plot(v, u[0, :-1, 20000])
-    ax2.set_xlabel(r"$\frac{du}{d\xi}$")
-    ax2.set_ylabel("u")
-    ax2.set_title('Phase plane')
-    plt.show()
+    # draw_traveling_wave()
 
     wave_speed(u, dt)
 
