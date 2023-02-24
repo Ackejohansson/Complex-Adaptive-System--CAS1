@@ -9,7 +9,6 @@ def draw_b(u, time_steps, dt):
         plt.ylabel("Wave u")
         for i in np.linspace(0, time_steps / dt - 5, 30):
             plt.plot(u[j, :, int(i)])
-    plt.legend()
     plt.show()
 
 
@@ -20,7 +19,6 @@ def draw_c(u, time_steps, dt):
         plt.ylabel("Wave u")
         for i in np.linspace(0, time_steps / dt * 0.2, 20):
             plt.plot(u[j, :, int(i)])
-    plt.legend()
     plt.show()
 
 
