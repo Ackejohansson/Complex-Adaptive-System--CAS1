@@ -3,16 +3,15 @@ import matplotlib.pyplot as plt
 
 
 def laplace(grid):
-    return np.roll(grid, 1, axis=0) + np.roll(grid, -1, axis=0) + np.roll(grid, 1, axis=1) + np.roll(grid, -1,
-                                                                                                     axis=1) - 4 * grid
+    return np.roll(grid,1,axis=0) + np.roll(grid,-1,axis=0) + np.roll(grid,1,axis=1) + np.roll(grid,-1,axis=1) - 4*grid
 
 
 def update_u(u, b, v, a, dt):
-    return (a - (b + 1) * u + (u ** 2) * v + laplace(u)) * dt
+    return (a - (b+1)*u + (u**2)*v + laplace(u))*dt
 
 
 def update_v(u, b, v, Dv, dt):
-    return (b * u - u ** 2 * v + Dv * laplace(v)) * dt
+    return (b*u - (u**2)*v + Dv*laplace(v))*dt
 
 
 def draw(u, u1000, Dv):
@@ -28,7 +27,6 @@ def main():
     time_steps = 100
     dt = 1/100
     L = 128
-    Dv = np.array([2.3, 3, 5, 9])
     a = 3
     b = 8
     steady_u = a
