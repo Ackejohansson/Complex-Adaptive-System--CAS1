@@ -7,9 +7,9 @@ bd_vals = [
     (1, 2),
     (10, 5)]
 n_0 = 10  # ??
-iterations = 1000
-b_t = np.zeros((3, iterations))
-d_t = np.zeros((3, iterations))
+iterations = int(1e4)
+b_t = np.zeros((len(bd_vals), iterations))
+d_t = np.zeros((len(bd_vals), iterations))
 dt = 1e-3
 
 
@@ -29,20 +29,21 @@ def simulation(b, d, index):
         d_t[index, n] = time_to_event(d)
 
 
-def plot():
-    for i in range(3):
-        n, bins, _ = plt.hist(b_t[i, :], bins=100, log=True, density=True)
-        params = expon.fit(b_t[i, :], floc=0)
-        Y = expon.pdf(bins, *params)
-        plt.plot(bins, Y)
-        plt.show()
+def plot(index):
+    n, bins, _ = plt.hist(b_t[index, :], bins=100, log=True, density=True)
+    params = expon.fit(b_t[index, :], floc=0)
+    Y = expon.pdf(bins, *params)
+    plt.plot(bins, Y)
+    plt.xlabel("Time until event")
+    plt.ylabel("Log(occurrences)")
+    plt.show()
 
 
 def main():
-    for index in range(3):
+    for index in range(len(bd_vals)):
         b, d = bd_vals[index]
         simulation(b, d, index)
-    plot()
+        plot(index)
 
 
 if __name__ == '__main__':
