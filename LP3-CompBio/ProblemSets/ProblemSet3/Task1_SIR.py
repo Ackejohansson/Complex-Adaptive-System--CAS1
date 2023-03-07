@@ -9,24 +9,25 @@ bd_vals = [
 iterations = int(1e5)
 b_t = np.zeros((len(bd_vals), iterations))
 d_t = np.zeros((len(bd_vals), iterations))
-dt = 1e-3
+dt = 1e-1
 
 # Task d)
 N = 10000
 alpha = 2
 beta = 1
+time_max = 1000
+number_of_runs = 10
+population = np.zeros((number_of_runs, int(time_max/dt-1)))
 n0 = N * (1-beta/alpha)
-time_max = 10000
-nRun = 2000
-population = np.zeros((nRun, int(time_max/dt-1)))
+population[:, 0] = n0
 
 
-def bn():
-    return alpha*population*(1-population/N)
+def bn(run, time):
+    return alpha*population[run, time]*(1-population[run, time]/N)
 
 
-def dn():
-    return beta*population
+def dn(run, time):
+    return beta*population[run, time]
 
 
 def time_to_event(a):
@@ -45,15 +46,26 @@ def simulation_c(b, d, index):
         d_t[index, n] = time_to_event(d)
 
 
-def simulation():
-    time_to_event(dn())
+def simulation_d():
+    for run in range(number_of_runs):
+        time, index_old = 0, 0
+        while time < time_max:
+            tb_sample = time_to_event(bn(run, index_old))
+            td_sample = time_to_event(dn(run, index_old))
+            time += min(tb_sample, td_sample)
+            index = int(time/dt)
+            population[run, index_old:index] = population[run, index_old]
+            if tb_sample < td_sample:
+                population[run, index] = population[run, index] + 1
+            else:
+                population[run, index] = population[run, index] - 1
+            index_old = index
 
 
 def plot(index, b, d):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), constrained_layout=True)
 
-    _, bins_b, _ = ax1.hist(b_t[index, :], bins=100, log=True, density=True, label=f'$b_n$={b}'
-                            )
+    _, bins_b, _ = ax1.hist(b_t[index, :], bins=100, log=True, density=True, label=f'$b_n$={b}')
     params_b = expon.fit(b_t[index, :], floc=0)
     Y_b = expon.pdf(bins_b, *params_b)
     ax1.plot(bins_b, Y_b, label=f'$\lambda=$ {round(1/params_b[1], 3)}')
@@ -74,11 +86,11 @@ def plot(index, b, d):
 
 
 def main():
-    for index in range(len(bd_vals)):
+    """    for index in range(len(bd_vals)):
         b, d = bd_vals[index]
         simulation_c(b, d, index)
-        plot(index, b, d)
-
+        plot(index, b, d)"""
+    simulation_d()
 
 
 
