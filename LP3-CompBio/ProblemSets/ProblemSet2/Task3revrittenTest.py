@@ -26,27 +26,23 @@ def calculate_r(theta, N):
     return np.absolute(np.sum(np.exp(1j * theta)))/N
 
 
-def plot(i):
-    ax = axes[i]
-    ax.set_title(f"K={K[i]}, N={N}")
-    ax.plot(np.array(range(len(r[i, :]))) * dt, r[i, :])
-    ax.set_xlabel("Time (t)")
-    ax.set_ylabel("Order parameter (r)")
-
-
-def run_simulation(i, k):
+def run_simulation(i, k, axes):
     omega = cauchy.rvs(loc=0, scale=gamma, size=N)
     theta = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=N)
     for t in range(int(time_max / dt)):
         theta = update_theta(theta, k, N, omega, dt)
         r[i, t] = calculate_r(theta, N)
-        plot(i)
+        ax = axes[i]
+        ax.set_title(f"K={K[i]}, N={N}")
+        ax.plot(np.array(range(len(r[i, :]))) * dt, r[i, :])
+        ax.set_xlabel("Time (t)")
+        ax.set_ylabel("Order parameter (r)")
 
 
 def main():
     fig, axes = plt.subplots(1, 3, constrained_layout=True, figsize=(10, 3))
     for i, k in enumerate(K):
-        run_simulation(i, k)
+        run_simulation(i, k, axes)
 
     plt.show()
 
