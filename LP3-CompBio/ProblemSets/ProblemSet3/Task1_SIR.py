@@ -6,11 +6,27 @@ bd_vals = [
     (0.1, 0.2),
     (1, 2),
     (10, 5)]
-n_0 = 10  # ??
 iterations = int(1e5)
 b_t = np.zeros((len(bd_vals), iterations))
 d_t = np.zeros((len(bd_vals), iterations))
 dt = 1e-3
+
+# Task d)
+N = 10000
+alpha = 2
+beta = 1
+n0 = N * (1-beta/alpha)
+time_max = 10000
+nRun = 2000
+population = np.zeros((nRun, int(time_max/dt-1)))
+
+
+def bn():
+    return alpha*population*(1-population/N)
+
+
+def dn():
+    return beta*population
 
 
 def time_to_event(a):
@@ -23,10 +39,14 @@ def time_to_event(a):
     return t
 
 
-def simulation(b, d, index):
+def simulation_c(b, d, index):
     for n in range(iterations):
         b_t[index, n] = time_to_event(b)
         d_t[index, n] = time_to_event(d)
+
+
+def simulation():
+    time_to_event(dn())
 
 
 def plot(index, b, d):
@@ -56,8 +76,10 @@ def plot(index, b, d):
 def main():
     for index in range(len(bd_vals)):
         b, d = bd_vals[index]
-        simulation(b, d, index)
+        simulation_c(b, d, index)
         plot(index, b, d)
+
+
 
 
 if __name__ == '__main__':
