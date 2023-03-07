@@ -16,18 +16,22 @@ N = 10000
 alpha = 2
 beta = 1
 time_max = 1000
-number_of_runs = 10
-population = np.zeros((number_of_runs, int(time_max/dt-1)))
+number_of_runs = 1
+population = np.zeros([number_of_runs, int(time_max/dt-1)])
 n0 = N * (1-beta/alpha)
 population[:, 0] = n0
 
 
-def bn(run, time):
-    return alpha*population[run, time]*(1-population[run, time]/N)
+def bn(run, index):
+    return alpha*population[run, index]*(1-population[run, index]/N)
 
 
-def dn(run, time):
-    return beta*population[run, time]
+def dn(run, index):
+    return beta*population[run, index]
+
+
+def sample_random_exp(a):
+    return np.random.exponential(scale=1/a, size=1)
 
 
 def time_to_event(a):
@@ -50,17 +54,21 @@ def simulation_d():
     for run in range(number_of_runs):
         time, index_old = 0, 0
         while time < time_max:
-            tb_sample = time_to_event(bn(run, index_old))
-            td_sample = time_to_event(dn(run, index_old))
+            tb_sample = sample_random_exp(bn(run, index_old))
+            td_sample = sample_random_exp(dn(run, index_old))
             time += min(tb_sample, td_sample)
             index = int(time/dt)
+            if index > np.size(population, axis=1):
+                break
             population[run, index_old:index] = population[run, index_old]
             if tb_sample < td_sample:
-                population[run, index] = population[run, index] + 1
+                population[run, index] = population[run, index_old] + 1
             else:
-                population[run, index] = population[run, index] - 1
+                population[run, index] = population[run, index_old] - 1
             index_old = index
-
+    plt.figure()
+    plt.plot(population)
+    plt.show()
 
 def plot(index, b, d):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), constrained_layout=True)
