@@ -9,3 +9,11 @@ for j = 1:numberOfVariables
     x(j) = -maximumVariableValue + 2*maximumVariableValue*x(j)/(1-2^(-k));
 end
 end
+
+%% Might work with this vectorized also
+%function x = DecodeChromosome(chromosome, numberOfVariables, maximumVariableValue)
+%    k = length(chromosome) / numberOfVariables;
+%    bits = reshape(chromosome, k, numberOfVariables)';
+%    powers = 2.^(-1:-1:-k);
+%    x = -maximumVariableValue + 2 * maximumVariableValue * sum(bits .* powers, 2) ./ (1 - 2^(-k));
+%end

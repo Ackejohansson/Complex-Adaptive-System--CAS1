@@ -13,7 +13,7 @@ dt = 1e-3
 
 
 def time_to_event(a):
-    t = 0
+    t = np.tiny
     while True:
         r = np.random.rand()
         if r < a * dt:
