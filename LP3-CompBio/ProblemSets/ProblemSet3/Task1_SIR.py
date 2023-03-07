@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import norm, expon
 
 bd_vals = [
     (0.1, 0.2),
@@ -13,12 +14,12 @@ dt = 1e-3
 
 
 def time_to_event(a):
-    t = np.tiny
+    t = 0
     while True:
         r = np.random.rand()
+        t += dt
         if r < a * dt:
             break
-        t += dt
     return t
 
 
@@ -28,13 +29,20 @@ def simulation(b, d, index):
         d_t[index, n] = time_to_event(d)
 
 
+def plot():
+    for i in range(3):
+        n, bins, _ = plt.hist(b_t[i, :], bins=100, log=True, density=True)
+        params = expon.fit(b_t[i, :], floc=0)
+        Y = expon.pdf(bins, *params)
+        plt.plot(bins, Y)
+        plt.show()
+
+
 def main():
     for index in range(3):
         b, d = bd_vals[index]
         simulation(b, d, index)
-    plt.hist(b_t, bins=100)
-    plt.show()
-    print("KLAR")
+    plot()
 
 
 if __name__ == '__main__':
