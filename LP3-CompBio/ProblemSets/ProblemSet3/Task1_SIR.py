@@ -6,17 +6,18 @@ bd_vals = [
     (1, 2),
     (10, 5)]
 n_0 = 10  # ??
-dt = 1e-2
-iterations = int(1e3)
+iterations = 1000
 b_t = np.zeros((3, iterations))
 d_t = np.zeros((3, iterations))
+dt = 1e-3
 
 
 def time_to_event(a):
     t = 0
     while True:
         r = np.random.rand()
-        if r < a * dt: break
+        if r < a * dt:
+            break
         t += dt
     return t
 
@@ -31,6 +32,8 @@ def main():
     for index in range(3):
         b, d = bd_vals[index]
         simulation(b, d, index)
+    plt.hist(b_t, bins=100)
+    plt.show()
     print("KLAR")
 
 
