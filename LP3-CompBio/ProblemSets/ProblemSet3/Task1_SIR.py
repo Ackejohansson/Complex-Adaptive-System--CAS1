@@ -9,17 +9,17 @@ bd_vals = [
 iterations = int(1e5)
 b_t = np.zeros((len(bd_vals), iterations))
 d_t = np.zeros((len(bd_vals), iterations))
-dt = 1e-1
+dt = 1e-3
 
 # Task d)
 N = 10000
-alpha = 2
-beta = 1
-time_max = 1000
-number_of_runs = 1
-population = np.zeros([number_of_runs, int(time_max/dt-1)])
-n0 = N * (1-beta/alpha)
-population[:, 0] = n0
+alpha = 0.02
+beta = 0.01
+time_max = 100
+number_of_runs = 1000
+population = np.zeros([number_of_runs, int(time_max/dt)])
+population[:, 0] = N * (1-beta/alpha)
+time_observing = np.array([.2, .5, .9])*int(time_max/dt)
 
 
 def bn(run, index):
@@ -40,8 +40,7 @@ def time_to_event(a):
         r = np.random.rand()
         t += dt
         if r < a * dt:
-            break
-    return t
+            return t
 
 
 def simulation_c(b, d, index):
@@ -58,7 +57,8 @@ def simulation_d():
             td_sample = sample_random_exp(dn(run, index_old))
             time += min(tb_sample, td_sample)
             index = int(time/dt)
-            if index > np.size(population, axis=1):
+            if index > np.size(population, axis=1)-1:
+                population[run, index_old:] = population[run, index_old]
                 break
             population[run, index_old:index] = population[run, index_old]
             if tb_sample < td_sample:
@@ -66,9 +66,13 @@ def simulation_d():
             else:
                 population[run, index] = population[run, index_old] - 1
             index_old = index
-    plt.figure()
-    plt.plot(population)
-    plt.show()
+
+
+def plot_histogram():
+    for pl in range(np.size(time_observing, axis=1)):
+        plt.hist(population[:, int(time_observing[pl])], bins=100, density=True)
+        plt.show()
+
 
 def plot(index, b, d):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), constrained_layout=True)
@@ -99,7 +103,7 @@ def main():
         simulation_c(b, d, index)
         plot(index, b, d)"""
     simulation_d()
-
+    plot_histogram()
 
 
 if __name__ == '__main__':
