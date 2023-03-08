@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import norm, expon
+from scipy.stats import expon
 
 bd_vals = [
     (0.1, 0.2),
@@ -9,15 +9,15 @@ bd_vals = [
 iterations = int(1e5)
 b_t = np.zeros((len(bd_vals), iterations))
 d_t = np.zeros((len(bd_vals), iterations))
-dt = 1e-3
+dt = 1e-2
 
 # Task d)
 N = 10000
 alpha = 0.02
 beta = 0.01
-time_max = 100
-number_of_runs = 1000
-population = np.zeros([number_of_runs, int(time_max/dt)])
+time_max = 5000
+number_of_runs = 3000
+population = np.zeros([number_of_runs, int(time_max/dt)], dtype=int)
 population[:, 0] = N * (1-beta/alpha)
 time_observing = np.array([.2, .5, .9])*int(time_max/dt)
 
@@ -53,6 +53,9 @@ def simulation_d():
     for run in range(number_of_runs):
         time, index_old = 0, 0
         while time < time_max:
+            if population[run, index_old] == 0:
+                population[run, index_old:] = population[run, index_old]
+                break
             tb_sample = sample_random_exp(bn(run, index_old))
             td_sample = sample_random_exp(dn(run, index_old))
             time += min(tb_sample, td_sample)
@@ -66,10 +69,12 @@ def simulation_d():
             else:
                 population[run, index] = population[run, index_old] - 1
             index_old = index
+    plt.plot(population[0,:])
+    plt.show()
 
 
 def plot_histogram():
-    for pl in range(np.size(time_observing, axis=1)):
+    for pl in range(3):
         plt.hist(population[:, int(time_observing[pl])], bins=100, density=True)
         plt.show()
 
