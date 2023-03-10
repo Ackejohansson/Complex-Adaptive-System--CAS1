@@ -13,7 +13,7 @@ dt = 1e-2
 
 # Task d)
 N = 10000
-alpha = 0.02
+alpha = 0.015
 beta = 0.01
 time_max = 5000
 number_of_runs = 3000
@@ -103,10 +103,10 @@ def plot(index, b, d):
 
 
 def main():
-    """    for index in range(len(bd_vals)):
+    for index in range(len(bd_vals)):
         b, d = bd_vals[index]
         simulation_c(b, d, index)
-        plot(index, b, d)"""
+        plot(index, b, d)
     simulation_d()
     plot_histogram()
 
