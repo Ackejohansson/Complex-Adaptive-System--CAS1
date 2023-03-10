@@ -35,12 +35,12 @@ def sample_random_exp(a):
 
 
 def time_to_event(a):
-    t = 0
+    time = 0
     while True:
         r = np.random.rand()
-        t += dt
+        time += dt
         if r < a * dt:
-            return t
+            return time
 
 
 def simulation_c(b, d, index):
@@ -103,10 +103,10 @@ def plot(index, b, d):
 
 
 def main():
-    #for index in range(len(bd_vals)):
-    #    b, d = bd_vals[index]
-    #    simulation_c(b, d, index)
-    #    plot(index, b, d)
+    for index in range(len(bd_vals)):
+        b, d = bd_vals[index]
+        simulation_c(b, d, index)
+        plot(index, b, d)
     simulation_d()
     plot_histogram()
 
