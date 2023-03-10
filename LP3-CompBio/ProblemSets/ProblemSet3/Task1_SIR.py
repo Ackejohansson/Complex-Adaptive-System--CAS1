@@ -12,14 +12,14 @@ d_t = np.zeros((len(bd_vals), iterations))
 dt = 1e-2
 
 # Task d)
-N = 10000
-alpha = 0.015
-beta = 0.01
-time_max = 5000
-number_of_runs = 3000
+N = 1000
+alpha = 1.1
+beta = 1
+time_max = 100
+number_of_runs = 6000
 population = np.zeros([number_of_runs, int(time_max/dt)], dtype=int)
 population[:, 0] = N * (1-beta/alpha)
-time_observing = np.array([.2, .5, .9])*int(time_max/dt)
+time_observing = np.array([.2, 0.7, 0.9])*int(time_max/dt)
 
 
 def bn(run, index):
@@ -103,10 +103,10 @@ def plot(index, b, d):
 
 
 def main():
-    for index in range(len(bd_vals)):
-        b, d = bd_vals[index]
-        simulation_c(b, d, index)
-        plot(index, b, d)
+    #for index in range(len(bd_vals)):
+    #    b, d = bd_vals[index]
+    #    simulation_c(b, d, index)
+    #    plot(index, b, d)
     simulation_d()
     plot_histogram()
 
