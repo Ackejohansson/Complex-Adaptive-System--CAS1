@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import expon
 
-bd_vals = [
+bd_values = [
     (0.1, 0.2),
     (1, 2),
     (10, 5)]
 iterations = int(1e5)
-b_t = np.zeros((len(bd_vals), iterations))
-d_t = np.zeros((len(bd_vals), iterations))
+b_t = np.zeros((len(bd_values), iterations))
+d_t = np.zeros((len(bd_values), iterations))
 dt = 1e-2
 
 # Task d)
@@ -22,16 +22,12 @@ population[:, 0] = N * (1-beta/alpha)
 time_observing = np.array([.2, 0.7, 0.9])*int(time_max/dt)
 
 
-def bn(run, index):
+def compute_b_n(run, index):
     return alpha*population[run, index]*(1-population[run, index]/N)
 
 
-def dn(run, index):
+def compute_d_n(run, index):
     return beta*population[run, index]
-
-
-def sample_random_exp(a):
-    return np.random.exponential(scale=1/a, size=1)
 
 
 def time_to_event(a):
@@ -43,38 +39,8 @@ def time_to_event(a):
             return time
 
 
-def simulation_c(b, d, index):
-    for n in range(iterations):
-        b_t[index, n] = time_to_event(b)
-        d_t[index, n] = time_to_event(d)
-
-
-def simulation_d():
-    for run in range(number_of_runs):
-        time, index_old = 0, 0
-        while time < time_max:
-            if population[run, index_old] == 0:
-                population[run, index_old:] = population[run, index_old]
-                break
-            tb_sample = sample_random_exp(bn(run, index_old))
-            td_sample = sample_random_exp(dn(run, index_old))
-            time += min(tb_sample, td_sample)
-            index = int(time/dt)
-            if index > np.size(population, axis=1)-1:
-                population[run, index_old:] = population[run, index_old]
-                break
-            population[run, index_old:index] = population[run, index_old]
-            if tb_sample < td_sample:
-                population[run, index] = population[run, index_old] + 1
-            else:
-                population[run, index] = population[run, index_old] - 1
-            index_old = index
-    plt.plot(population[0,:])
-    plt.show()
-
-
 def plot_histogram():
-    for pl in range(3):
+    for pl in range(time_observing.size):
         plt.hist(population[:, int(time_observing[pl])], bins=100, density=True)
         plt.show()
 
@@ -102,11 +68,42 @@ def plot(index, b, d):
     plt.show()
 
 
+def simulation_c(b, d, index):
+    for n in range(iterations):
+        b_t[index, n] = time_to_event(b)
+        d_t[index, n] = time_to_event(d)
+
+
+def simulation_d():
+    for run in range(number_of_runs):
+        time, index_old = 0, 0
+        while time < time_max:
+            if population[run, index_old] == 0:
+                population[run, index_old:] = population[run, index_old]
+                break
+            tb_sample = np.random.exponential(scale=1/compute_b_n(run, index_old), size=1)
+            td_sample = np.random.exponential(scale=1/compute_d_n(run, index_old), size=1)
+            time += min(tb_sample, td_sample)
+            index = int(time/dt)
+            if index > np.size(population, axis=1)-1:
+                population[run, index_old:] = population[run, index_old]
+                break
+            population[run, index_old:index] = population[run, index_old]
+            if tb_sample < td_sample:
+                population[run, index] = population[run, index_old] + 1
+            else:
+                population[run, index] = population[run, index_old] - 1
+            index_old = index
+    plt.plot(population[0,:])
+    plt.show()
+
+
 def main():
-    for index in range(len(bd_vals)):
-        b, d = bd_vals[index]
+    for index in range(len(bd_values)):
+        b, d = bd_values[index]
         simulation_c(b, d, index)
         plot(index, b, d)
+
     simulation_d()
     plot_histogram()
 
