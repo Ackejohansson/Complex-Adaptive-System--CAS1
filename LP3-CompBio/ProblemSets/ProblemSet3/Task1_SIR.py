@@ -59,7 +59,6 @@ def plot(index, b, d):
     params_d = expon.fit(d_t[index, :], floc=0)
     Y_d = expon.pdf(bins_d, *params_d)
     ax2.plot(bins_d, Y_d, label=f'$\lambda=$ {round(1/params_d[1], 3)}')
-
     ax2.set_xlabel('Time until event')
 
     fig.suptitle('Histogram over probability distribution', fontsize=16)
