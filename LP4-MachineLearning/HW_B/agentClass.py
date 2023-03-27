@@ -18,20 +18,19 @@ class TQAgent:
     def fn_init(self,gameboard):
         self.gameboard=gameboard
         # TO BE COMPLETED BY STUDENT
-        # This function should be written by you
-        # Instructions:
+        # LEFT: initialize states? Maybe in qtable. Not using episode count
+
         # In this function you could set up and initialize the states, actions and Q-table and storage for the rewards
         # This function should not return a value, store Q table etc as attributes of self
 
         # Useful variables: 
-        # 'gameboard.N_row' number of rows in gameboard
-        # 'gameboard.N_col' number of columns in gameboard
-        # 'len(gameboard.tiles)' number of different tiles
-        # 'self.episode_count' the total number of episodes in the training
-        self.number_of_actions()
+        # 'gameboard.N_row, gameboard.N_col, len(gameboard.tiles)' self.episode_count (the total number of episodes in the training)
+        self.set_possible_actions()
         self.qtable = {}
+        self.fn_read_state()
+        self.episode_count += 1
 
-    def number_of_actions(self):
+    def set_possible_actions(self):
         possible_actions = np.zeros((len(self.gameboard.tiles), self.gameboard.N_col*4))
         for i, tile in enumerate(self.gameboard.tiles):
             for j, rotation in enumerate(tile):
@@ -63,13 +62,12 @@ class TQAgent:
 
     def fn_select_action(self):
         # TO BE COMPLETED BY STUDENT
-        # This function should be written by you
-        # Instructions:
+        # LEFT: NaN
         # Choose and execute an action, based on the Q-table or random if epsilon greedy
         # This function should not return a value, store the action as an attribute of self and exectute the action by moving the tile to the desired position and orientation
 
         # Useful variables: 
-        # 'self.epsilon' parameter epsilon in epsilon-greedy policy
+        # 'self.epsilon' 
 
         # Useful functions
         # 'self.gameboard.fn_move(tile_x,tile_orientation)' use this function to execute the selected action
@@ -77,11 +75,16 @@ class TQAgent:
         # The input argument 'tile_orientation' contains the number of 90 degree rotations of the tile (0 < tile_orientation < # of non-degenerate rotations)
         # The function returns 1 if the action is not valid and 0 otherwise
         # You can use this function to map out which actions are valid or not
+        index_possible_actions = np.argwhere(self.qtable[self.state][self.gameboard.cur_tile_type] == 1).flatten()
         if np.random.rand() < self.epsilon:
-            action = max(self.qtable, key=self.qtable.get)
-        action = random.choice(self.qtable[self.state])
-        print(action)
-    
+            action_index = random.choice(index_possible_actions)
+        else:
+            action_index = np.argmax(self.qtable[self.state][self.gameboard.cur_tile_type][index_possible_actions])
+
+        position_drop = action_index % self.gameboard.N_col
+        number_of_rotation = action_index // self.gameboard.N_col
+        self.gameboard.fn_move(position_drop, number_of_rotation)
+
     def fn_reinforce(self,old_state,reward):
         pass
         # TO BE COMPLETED BY STUDENT
