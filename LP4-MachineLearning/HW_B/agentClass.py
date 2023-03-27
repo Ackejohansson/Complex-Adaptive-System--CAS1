@@ -42,6 +42,7 @@ class TQAgent:
         # TO BE COMPLETED BY STUDENT
         # Here you can load the Q-table (to Q-table of self) from the input parameter strategy_file (used to test how the agent plays)
 
+
     def fn_read_state(self):
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
@@ -84,17 +85,16 @@ class TQAgent:
         position_drop = action_index % self.gameboard.N_col
         number_of_rotation = action_index // self.gameboard.N_col
         self.gameboard.fn_move(position_drop, number_of_rotation)
+        self.action_index = action_index
 
     def fn_reinforce(self,old_state,reward):
-        pass
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
         # Update the Q table using state and action stored as attributes in self and using function arguments for the old state and the reward
         # This function should not return a value, the Q table is stored as an attribute of self
-
-        # Useful variables: 
-        # 'self.alpha' learning rate
+        # TODO not correct update rule
+        self.qtable[old_state][self.gameboard.cur_tile_type][self.action_index] += self.alpha*(reward + np.argmax(self.qtable[self.state][0]) - self.qtable[old_state][self.gameboard.cur_tile_type][self.action_index])%
 
     def fn_turn(self):
         if self.gameboard.gameover:
@@ -116,12 +116,14 @@ class TQAgent:
             self.fn_select_action()
             # TO BE COMPLETED BY STUDENT
             # Here you should write line(s) to copy the old state into the variable 'old_state' which is later passed to fn_reinforce()
+            old_state = self.state
 
             # Drop the tile on the game board
             reward=self.gameboard.fn_drop()
             # TO BE COMPLETED BY STUDENT
+            # TODO 
             # Here you should write line(s) to add the current reward to the total reward for the current episode, so you can save it to disk later
-
+            
             # Read the new state
             self.fn_read_state()
             # Update the Q-table using the old state and the reward (the new state and the taken action should be stored as attributes in self)
