@@ -9,7 +9,7 @@ class TGameBoard:
         self.tile_size=tile_size
         self.max_tile_count=max_tile_count
         self.stochastic_prob=stochastic_prob
-        self.agent=agent;
+        self.agent=agent
         # Create table for game board, entries 1 means occupied, entries -1 means free
         # Use type float32 to simplify conversion to tensors in torch
         self.board=np.empty((N_row,N_col),dtype=np.float32)
@@ -140,7 +140,7 @@ class TGameBoard:
         for xLoop in range(len(curtile)):
             curx=(self.tile_x+xLoop)%self.N_col
             # Find first occupied location in this column            
-            cury=-1;
+            cury=-1
             for yLoop in range(self.N_row-1,-1,-1):
                 if self.board[yLoop,curx]>0:
                     # Calculate the y position for this column if no other columns are taken into account
@@ -154,7 +154,7 @@ class TGameBoard:
         for xLoop in range(len(curtile)):
             if self.tile_y+curtile[xLoop][1]>self.N_row:
                 self.gameover=1
-                return -100;
+                return -100
             else:
                 self.board[self.tile_y+curtile[xLoop][0]:self.tile_y+curtile[xLoop][1],(xLoop+self.tile_x)%self.N_col]=1
 

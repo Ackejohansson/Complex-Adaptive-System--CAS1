@@ -29,15 +29,14 @@ class TQAgent:
         # 'len(gameboard.tiles)' number of different tiles
         # 'self.episode_count' the total number of episodes in the training
         self.number_of_actions()
+        self.qtable = {}
 
     def number_of_actions(self):
-        actions = []
-        for tile in (self.gameboard.tiles):
-            actions = 0
-            for rotations in tile:
-                actions += self.gameboard.N_col + 1 - len(rotations)
-            actions.append(actions)
-        return actions
+        possible_actions = np.zeros((len(self.gameboard.tiles), self.gameboard.N_col*4))
+        for i, tile in enumerate(self.gameboard.tiles):
+            for j, rotation in enumerate(tile):
+                possible_actions[i][j*self.gameboard.N_col:j*self.gameboard.N_col+self.gameboard.N_col+1-len(rotation)] = 1
+        self.possible_actions = possible_actions
 
     def fn_load_strategy(self,strategy_file):
         pass
@@ -45,11 +44,10 @@ class TQAgent:
         # Here you can load the Q-table (to Q-table of self) from the input parameter strategy_file (used to test how the agent plays)
 
     def fn_read_state(self):
-        pass
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
-        # In this function you could calculate the current state of the gane board
+        # In this function you could calculate the current state of the game board
         # You can for example represent the state as an integer entry in the Q-table
         # This function should not return a value, store the state as an attribute of self
 
@@ -58,11 +56,12 @@ class TQAgent:
         # 'self.gameboard.N_col' number of columns in gameboard
         # 'self.gameboard.board[index_row,index_col]' table indicating if row 'index_row' and column 'index_col' is occupied (+1) or free (-1)
         # 'self.gameboard.cur_tile_type' identifier of the current tile that should be placed on the game board (integer between 0 and len(self.gameboard.tiles))
-        key = np.reshape(self.gameboard.board, (1, self.gameboard.N_row*self.gameboard.N_col))
-        key = np.append()
+        self.state = np.reshape(self.gameboard.board, (1, self.gameboard.N_row*self.gameboard.N_col))
+        self.state = tuple(np.append(self.state, self.gameboard.cur_tile_type))
+        if self.state not in self.qtable:
+            self.qtable[self.state] = self.possible_actions
 
     def fn_select_action(self):
-        pass
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
@@ -78,6 +77,10 @@ class TQAgent:
         # The input argument 'tile_orientation' contains the number of 90 degree rotations of the tile (0 < tile_orientation < # of non-degenerate rotations)
         # The function returns 1 if the action is not valid and 0 otherwise
         # You can use this function to map out which actions are valid or not
+        if np.random.rand() < self.epsilon:
+            action = max(self.qtable, key=self.qtable.get)
+        action = random.choice(self.qtable[self.state])
+        print(action)
     
     def fn_reinforce(self,old_state,reward):
         pass
