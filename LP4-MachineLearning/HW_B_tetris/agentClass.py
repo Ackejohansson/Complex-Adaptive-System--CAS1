@@ -2,18 +2,15 @@ import numpy as np
 import random
 import math
 import h5py
-# import matplotlib as plt
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
 
 # This file provides the skeleton structure for the classes TQAgent and TDQNAgent to be completed by you, the student.
 # Locations starting with # TO BE COMPLETED BY STUDENT indicates missing code that should be written by you.
 
 class TQAgent:
-    # Agent for learning to play tetris using Q-learning
     def __init__(self,alpha,epsilon,episode_count):
-        # Initialize training parameters
         self.alpha=alpha
         self.epsilon=epsilon
         self.episode=0
@@ -72,7 +69,11 @@ class TQAgent:
                     # TO BE COMPLETED BY STUDENT
                     # Here you can save the rewards and the Q-table to data files for plotting of the rewards and the Q-table can be used to test how the agent plays
             if self.episode>=self.episode_count:
-                # plt.plot(self.reward_tots)
+                plt.plot(self.reward_tots)
+                plt.title("Agent playing", fontsize=20)
+                plt.xlabel("Epochs")
+                plt.ylabel("Reward")
+                plt.show()
                 raise SystemExit(0)
             else:
                 self.gameboard.fn_restart()
@@ -118,6 +119,7 @@ class TDQNAgent:
 
     def fn_init(self,gameboard):
         self.gameboard=gameboard
+        self.set_possible_actions()
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
@@ -127,9 +129,9 @@ class TDQNAgent:
         # This function should not return a value, store Q network etc as attributes of self
         model = keras.Sequential(
     [
-        layers.Dense(2, activation="relu"),
-        layers.Dense(3, activation="relu"),
-        layers.Dense(4),
+        layers.Dense(16, activation="relu"),
+        layers.Dense(64, activation="relu"),
+        layers.Dense(index_possible_actions = np.argwhere(self.possible_actions[self.gameboard.cur_tile_type] == 1).flatten()),
     ]
 )
 
@@ -140,6 +142,13 @@ class TDQNAgent:
         # 'self.alpha' the learning rate for stochastic gradient descent
         # 'self.episode_count' the total number of episodes in the training
         # 'self.replay_buffer_size' the number of quadruplets stored in the experience replay buffer
+
+    def set_possible_actions(self):
+        possible_actions = np.zeros((len(self.gameboard.tiles), self.gameboard.N_col*4))
+        for i, tile in enumerate(self.gameboard.tiles):
+            for j, rotation in enumerate(tile):
+                possible_actions[i][j*self.gameboard.N_col:j*self.gameboard.N_col+self.gameboard.N_col+1-len(rotation)] = 1
+        self.possible_actions = possible_actions
 
     def fn_load_strategy(self,strategy_file):
         pass

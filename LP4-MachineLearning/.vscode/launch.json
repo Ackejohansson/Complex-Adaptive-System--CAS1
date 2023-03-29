@@ -8,7 +8,7 @@
             "name": "DB: tetris.py",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/HW_B/tetris.py",
+            "program": "${workspaceFolder}/HW_B_tetris/tetris.py",
             "console": "internalConsole"
         },
         {
