@@ -55,11 +55,11 @@ class TQAgent:
             self.action = random.choice(legal_action_indices) # TODO this should return a qtable index
         else:
             self.action =  np.argmax(self.qtable[self.state])
+        
         action_index = legal_action_indices[self.action]
         position_drop = action_index % self.gameboard.N_col
         number_of_rotations = action_index // self.gameboard.N_col
 
-        self.action_index = action_index
         self.gameboard.fn_move(position_drop, number_of_rotations)
         
         # TODO Broke my action 
