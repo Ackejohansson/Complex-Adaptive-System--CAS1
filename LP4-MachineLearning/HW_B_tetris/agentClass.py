@@ -2,7 +2,10 @@ import numpy as np
 import random
 import math
 import h5py
-import matplotlib.pyplot as plt
+# import matplotlib as plt
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 
 # This file provides the skeleton structure for the classes TQAgent and TDQNAgent to be completed by you, the student.
 # Locations starting with # TO BE COMPLETED BY STUDENT indicates missing code that should be written by you.
@@ -49,7 +52,6 @@ class TQAgent:
             self.action_index = np.argmax(self.qtable[self.state])
         
         action_index = index_possible_actions[self.action_index]
-
         position_drop = action_index % self.gameboard.N_col
         number_of_rotation = action_index // self.gameboard.N_col
         self.gameboard.fn_move(position_drop, number_of_rotation)
@@ -70,7 +72,7 @@ class TQAgent:
                     # TO BE COMPLETED BY STUDENT
                     # Here you can save the rewards and the Q-table to data files for plotting of the rewards and the Q-table can be used to test how the agent plays
             if self.episode>=self.episode_count:
-                plt.
+                # plt.plot(self.reward_tots)
                 raise SystemExit(0)
             else:
                 self.gameboard.fn_restart()
@@ -119,9 +121,17 @@ class TDQNAgent:
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
-        # In this function you could set up and initialize the states, actions, the Q-networks (one for calculating actions and one target network), experience replay buffer and storage for the rewards
+        # In this function you could set up and initialize the states, actions, the Q-networks (one for calculating actions and one target network), 
+        # experience replay buffer and storage for the rewards
         # You can use any framework for constructing the networks, for example pytorch or tensorflow
         # This function should not return a value, store Q network etc as attributes of self
+        model = keras.Sequential(
+    [
+        layers.Dense(2, activation="relu"),
+        layers.Dense(3, activation="relu"),
+        layers.Dense(4),
+    ]
+)
 
         # Useful variables: 
         # 'gameboard.N_row' number of rows in gameboard
