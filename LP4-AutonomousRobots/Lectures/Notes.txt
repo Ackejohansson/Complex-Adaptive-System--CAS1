@@ -1,0 +1,14 @@
+def kiwi
+resolution 640x280
+color channels 3
+shm name img.bgr
+cid 140
+
+
+def rec files
+1280x1024
+4
+img.argb
+111
+
+Combining 2 sources sencors and motors in a Kalman filter

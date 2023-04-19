@@ -4,13 +4,14 @@ import math
 import h5py
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow import keras
 
 # This file provides the skeleton structure for the classes TQAgent and TDQNAgent to be completed by you, the student.
 # Locations starting with # TO BE COMPLETED BY STUDENT indicates missing code that should be written by you.
 
 class TQAgent:
+    # Agent for learning to play tetris using Q-learning
     def __init__(self,alpha,epsilon,episode_count):
+        # Initialize training parameters
         self.alpha=alpha
         self.epsilon=epsilon
         self.episode=0
@@ -18,23 +19,16 @@ class TQAgent:
 
     def fn_init(self,gameboard):
         self.gameboard=gameboard
-        self.set_actions() # nr_tiles times, possible moves. 1 if possible
+        self.set_possible_actions()
         self.qtable = {}
         self.reward_tots = np.zeros(self.episode_count)
 
-
-    def set_actions(self):
-        num_tiles = len(self.gameboard.tiles)
-        self.action_matrix = np.zeros((num_tiles, self.gameboard.N_col * 4))
-
-        for tile_id, tile in enumerate(self.gameboard.tiles):
-            num_rotations = len(tile)
-            for rotation in range(num_rotations):
-                # Find possible places to drop given rotation 
-                start_index = rotation * self.gameboard.N_col
-                end_index =  start_index + self.gameboard.N_col - len(tile[rotation]) + 1 
-                self.action_matrix[tile_id][start_index : end_index] = 1
-
+    def set_possible_actions(self):
+        possible_actions = np.zeros((len(self.gameboard.tiles), self.gameboard.N_col*4))
+        for i, tile in enumerate(self.gameboard.tiles):
+            for j, rotation in enumerate(tile):
+                possible_actions[i][j*self.gameboard.N_col:j*self.gameboard.N_col+self.gameboard.N_col+1-len(rotation)] = 1
+        self.possible_actions = possible_actions
 
     def fn_load_strategy(self,strategy_file):
         pass
@@ -43,29 +37,26 @@ class TQAgent:
 
 
     def fn_read_state(self):
-        self.state = tuple( np.append(self.gameboard.board.flatten(), self.gameboard.cur_tile_type) )
+        self.state = np.reshape(self.gameboard.board, (1, self.gameboard.N_row*self.gameboard.N_col))
+        self.state = tuple(np.append(self.state, self.gameboard.cur_tile_type))
         if self.state not in self.qtable:
-            num_legal_actions = int(sum(self.action_matrix[self.gameboard.cur_tile_type]))
-            self.qtable[self.state] = np.zeros(num_legal_actions)
-
+            self.qtable[self.state] = np.zeros(int(sum(self.possible_actions[self.gameboard.cur_tile_type])))
 
     def fn_select_action(self):
-        legal_action_indices = np.argwhere(self.action_matrix[self.gameboard.cur_tile_type] == 1).flatten()
+        index_possible_actions = np.argwhere(self.possible_actions[self.gameboard.cur_tile_type] == 1).flatten()
         if np.random.rand() < self.epsilon:
-            self.action = random.choice(legal_action_indices) # TODO this should return a qtable index
+            self.action_index = random.choice(index_possible_actions)
         else:
-            self.action =  np.argmax(self.qtable[self.state])
+            self.action_index = np.argmax(self.qtable[self.state])
         
-        action_index = legal_action_indices[self.action]
+        action_index = index_possible_actions[self.action_index]
         position_drop = action_index % self.gameboard.N_col
-        number_of_rotations = action_index // self.gameboard.N_col
-
-        self.gameboard.fn_move(position_drop, number_of_rotations)
+        number_of_rotation = action_index // self.gameboard.N_col
+        self.gameboard.fn_move(position_drop, number_of_rotation)
         
-        # TODO Broke my action 
-    def fn_reinforce(self,old_state,reward):
-        self.qtable[old_state][self.action] += self.alpha*(reward + np.max(self.qtable[self.state]) - self.qtable[old_state][self.action])
 
+    def fn_reinforce(self,old_state,reward):
+        self.qtable[old_state][self.action_index] += self.alpha*(reward + np.max(self.qtable[self.state]) - self.qtable[old_state][self.action_index])
 
     def fn_turn(self):
         if self.gameboard.gameover:
@@ -80,9 +71,6 @@ class TQAgent:
                     # Here you can save the rewards and the Q-table to data files for plotting of the rewards and the Q-table can be used to test how the agent plays
             if self.episode>=self.episode_count:
                 plt.plot(self.reward_tots)
-                # plt.title("Tetris ", fontsize=20)
-                plt.xlabel("Episode")
-                plt.ylabel("Reward")
                 plt.show()
                 raise SystemExit(0)
             else:
@@ -129,7 +117,6 @@ class TDQNAgent:
 
     def fn_init(self,gameboard):
         self.gameboard=gameboard
-        self.set_possible_actions()
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
@@ -137,13 +124,6 @@ class TDQNAgent:
         # experience replay buffer and storage for the rewards
         # You can use any framework for constructing the networks, for example pytorch or tensorflow
         # This function should not return a value, store Q network etc as attributes of self
-        model = keras.Sequential(
-    [
-        layers.Dense(16, activation="relu"),
-        layers.Dense(64, activation="relu"),
-        layers.Dense(index_possible_actions = np.argwhere(self.possible_actions[self.gameboard.cur_tile_type] == 1).flatten()),
-    ]
-)
 
         # Useful variables: 
         # 'gameboard.N_row' number of rows in gameboard
@@ -152,13 +132,6 @@ class TDQNAgent:
         # 'self.alpha' the learning rate for stochastic gradient descent
         # 'self.episode_count' the total number of episodes in the training
         # 'self.replay_buffer_size' the number of quadruplets stored in the experience replay buffer
-
-    def set_possible_actions(self):
-        possible_actions = np.zeros((len(self.gameboard.tiles), self.gameboard.N_col*4))
-        for i, tile in enumerate(self.gameboard.tiles):
-            for j, rotation in enumerate(tile):
-                possible_actions[i][j*self.gameboard.N_col:j*self.gameboard.N_col+self.gameboard.N_col+1-len(rotation)] = 1
-        self.possible_actions = possible_actions
 
     def fn_load_strategy(self,strategy_file):
         pass
