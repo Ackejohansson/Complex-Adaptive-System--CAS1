@@ -45,7 +45,7 @@ class TQAgent:
     def fn_select_action(self):
         index_possible_actions = np.argwhere(self.possible_actions[self.gameboard.cur_tile_type] == 1).flatten()
         if np.random.rand() < self.epsilon:
-            self.action_index = random.choice(index_possible_actions)
+            self.action_index = np.random.choice(index_possible_actions.size)
         else:
             self.action_index = np.argmax(self.qtable[self.state])
         
@@ -91,9 +91,21 @@ class TQAgent:
 
 
 
+import nn.Sequential
 
+class DeepQNetwork(nn.Module):
+    def __init__(self):
+        super(DeepQNetwork, self).__init__()
+        self.conv1 = nn.Sequential(nn.Linear(4, 64), nn.ReLU(inplace=True))
+        self.conv2 = nn.Sequential(nn.Linear(64, 64), nn.ReLU(inplace=True))
+        self.conv3 = nn.Sequential(nn.Linear(64, 1))
 
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
 
+        return 
 
 
 

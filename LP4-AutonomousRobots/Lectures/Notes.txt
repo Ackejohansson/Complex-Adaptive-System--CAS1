@@ -12,3 +12,12 @@ img.argb
 111
 
 Combining 2 sources sencors and motors in a Kalman filter
+
+
+
+# Updatera mjukvaran i kameran
+ssh -p 2200 localhost
+sudo -i
+ls
+nano docker-compose.yml
+docker-compose restart
