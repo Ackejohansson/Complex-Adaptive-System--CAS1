@@ -31,6 +31,7 @@ class TQAgent:
         self.possible_actions = possible_actions
 
     def fn_load_strategy(self,strategy_file):
+        # np.load
         pass
         # TO BE COMPLETED BY STUDENT
         # Here you can load the Q-table (to Q-table of self) from the input parameter strategy_file (used to test how the agent plays)
@@ -67,6 +68,7 @@ class TQAgent:
                 saveEpisodes=[1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000];
                 if self.episode in saveEpisodes:
                     pass
+                    # np.save()
                     # TO BE COMPLETED BY STUDENT
                     # Here you can save the rewards and the Q-table to data files for plotting of the rewards and the Q-table can be used to test how the agent plays
             if self.episode>=self.episode_count:
@@ -86,31 +88,29 @@ class TQAgent:
             self.fn_reinforce(old_state,reward)
 
 
+#######################################################################################################################################################
+#######################################################################################################################################################
+#######################################################################################################################################################
+#######################################################################################################################################################
 
 
+import torch
+import torch.nn.functional as F
+from torch_geometric.nn import Linear
 
-
-
-import nn.Sequential
-
-class DeepQNetwork(nn.Module):
+class DeepQNetwork(torch.nn.Module):
     def __init__(self):
         super(DeepQNetwork, self).__init__()
-        self.conv1 = nn.Sequential(nn.Linear(4, 64), nn.ReLU(inplace=True))
-        self.conv2 = nn.Sequential(nn.Linear(64, 64), nn.ReLU(inplace=True))
-        self.conv3 = nn.Sequential(nn.Linear(64, 1))
-
+        self.lin1 = Linear(20, 64)
+        self.lin2 = Linear(64, 64)
+        self.lin3 = Linear(64, 16)
+        
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
+        x = F.relu(self.lin1(x))
+        x = F.relu(self.lin2(x))
+        x = self.lin3(x)
 
-        return 
-
-
-
-
-
+        return x
 
 
 
@@ -136,6 +136,22 @@ class TDQNAgent:
         # experience replay buffer and storage for the rewards
         # You can use any framework for constructing the networks, for example pytorch or tensorflow
         # This function should not return a value, store Q network etc as attributes of self
+        self.dqn_action = DeepQNetwork()
+        self.dqn_target = DeepQNetwork()
+        self.actions = []
+        self.replay = np.zeros([self.replay_buffer_size])
+        self.reward_tots = np.zeros(self.episode_count)
+        self.exp_buffer = []
+        #self.qnn.eval()
+        self.dqn_target.eval()
+        self.optim = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
+        self.loss_fn = torch.nn.MSELoss()
+        
+        # Backpropagation
+        #self.optimizer.zero_grad()
+        #self.loss_fn.backward()
+        #self.optimizer.step()
+
 
         # Useful variables: 
         # 'gameboard.N_row' number of rows in gameboard
@@ -151,7 +167,11 @@ class TDQNAgent:
         # Here you can load the Q-network (to Q-network of self) from the strategy_file
 
     def fn_read_state(self):
-        pass
+        self.state = self.gameboard.board.flatten()
+        tile = -np.ones(len(self.gameboard.tiles))
+        tile[self.gameboard.cur_tile_type] = 1
+        self.state = torch.tensor(np.append(self.state, tile))
+        
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
@@ -166,6 +186,10 @@ class TDQNAgent:
         # 'self.gameboard.cur_tile_type' identifier of the current tile that should be placed on the game board (integer between 0 and len(self.gameboard.tiles))
 
     def fn_select_action(self):
+        if np.random.rand() < self.epsilon:
+            self.action_index = np.random.choice(16)
+        else:
+            self.action_index = self.dqn_action(self.state.float()).argmax()#.item()
         pass
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
