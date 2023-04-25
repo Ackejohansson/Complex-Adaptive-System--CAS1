@@ -97,7 +97,6 @@ class TQAgent:
 
 import torch
 import torch.nn.functional as F
-#from torch_geometric.nn import Linear
 import torch.nn as nn
 
 
@@ -113,13 +112,11 @@ class DeepQNetwork(torch.nn.Module):
         x = F.relu(self.lin2(x))
         x = self.lin3(x)
 
-        return x#.detach()
+        return x
 
 
 class TDQNAgent:
-    # Agent for learning to play tetris using Q-learning
     def __init__(self,alpha,epsilon,epsilon_scale,replay_buffer_size,batch_size,sync_target_episode_count,episode_count):
-        # Initialize training parameters
         self.alpha=alpha
         self.epsilon=epsilon
         self.epsilon_scale=epsilon_scale
@@ -139,11 +136,9 @@ class TDQNAgent:
         self.exp_buffer = []
         self.optimizer = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
         self.criterion = torch.nn.MSELoss()
-        #self.replay = np.zeros([self.replay_buffer_size])
-
-        # 'self.alpha' the learning rate for stochastic gradient descent
         # 'self.episode_count' the total number of episodes in the training
         # 'self.replay_buffer_size' the number of quadruplets stored in the experience replay buffer
+
 
     def fn_load_strategy(self,strategy_file):
         pass
@@ -155,19 +150,7 @@ class TDQNAgent:
         tile = -np.ones(len(self.gameboard.tiles))
         tile[self.gameboard.cur_tile_type] = 1
         self.state = torch.tensor(np.append(self.state, tile))
-        
-        # TO BE COMPLETED BY STUDENT
-        # This function should be written by you
-        # Instructions:
-        # In this function you could calculate the current state of the gane board
-        # You can for example represent the state as a copy of the game board and the identifier of the current tile
-        # This function should not return a value, store the state as an attribute of self
-
-        # Useful variables: 
-        # 'self.gameboard.N_row' number of rows in gameboard
-        # 'self.gameboard.N_col' number of columns in gameboard
-        # 'self.gameboard.board[index_row,index_col]' table indicating if row 'index_row' and column 'index_col' is occupied (+1) or free (-1)
-        # 'self.gameboard.cur_tile_type' identifier of the current tile that should be placed on the game board (integer between 0 and len(self.gameboard.tiles))
+  
 
     def fn_select_action(self):
         # TODO might give wrong type out
@@ -180,22 +163,6 @@ class TDQNAgent:
         number_of_rotation = self.action_index // self.gameboard.N_col
         self.gameboard.fn_move(position_drop, number_of_rotation)
 
-        # TO BE COMPLETED BY STUDENT
-        # This function should be written by you
-        # Instructions:
-        # Choose and execute an action, based on the output of the Q-network for the current state, or random if epsilon greedy
-        # This function should not return a value, store the action as an attribute of self and exectute the action by moving the tile to the desired position and orientation
-
-        # Useful variables: 
-        # 'self.epsilon' parameter epsilon in epsilon-greedy policy
-        # 'self.epsilon_scale' parameter for the scale of the episode number where epsilon_N changes from unity to epsilon
-
-        # Useful functions
-        # 'self.gameboard.fn_move(tile_x,tile_orientation)' use this function to execute the selected action
-        # The input argument 'tile_x' contains the column of the tile (0 <= tile_x < self.gameboard.N_col)
-        # The input argument 'tile_orientation' contains the number of 90 degree rotations of the tile (0 < tile_orientation < # of non-degenerate rotations)
-        # The function returns 1 if the action is not valid and 0 otherwise
-        # You can use this function to map out which actions are valid or not
 
     def fn_reinforce(self,batch):
         # TODO dont go in here untill replay buffer is largeenough
@@ -212,17 +179,6 @@ class TDQNAgent:
             self.loss.backward()
             self.optimizer.step()
             
-            
-        # TO BE COMPLETED BY STUDENT
-        # This function should be written by you
-        # Instructions:
-        # Update the Q network using a batch of quadruplets (old state, last action, last reward, new state)
-        # Calculate the loss function by first, for each old state, use the Q-network to calculate the values Q(s_old,a), i.e. the estimate of the future reward for all actions a
-        # Then repeat for the target network to calculate the value \hat Q(s_new,a) of the new state (use \hat Q=0 if the new state is terminal)
-        # This function should not return a value, the Q table is stored as an attribute of self
-
-        # Useful variables: 
-        # The input argument 'batch' contains a sample of quadruplets used to update the Q-network
 
     def fn_turn(self):
         if self.gameboard.gameover:
