@@ -21,3 +21,32 @@ sudo -i
 ls
 nano docker-compose.yml
 docker-compose restart
+
+
+
+Can use height of cone to get distance
+
+
+ASssignment 2
+make changes only to the 2 microservices
+keep the kiwi microservices for sumulation slide  only change näst sista och 3e sista
+
+3 main prob
+how everythong fits together
+what messages to send and whera
+keep track of time
+
+opendlvtestlogic.cpp
+
+chane auto atFrequenzy
+create a timevariable outside and link in to lambda and update for ecerystep
+instead of gsangle and pedal request get wheel speed
+
+instead of 0 so set sendersstamp with time
+
+in motor we want to recive the message we sent
+two data triggers ground and pedal. Will not be the same since looking for other message.
+Greate a new differentialy steered class instead of the one now
+
+Send kinematic state (velocities)
+Dont have to integrate because its handled in the later states so just send velocities

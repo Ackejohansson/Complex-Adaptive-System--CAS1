@@ -126,6 +126,7 @@ class TDQNAgent:
         self.sync_target_episode_count=sync_target_episode_count
         self.episode=0
         self.episode_count=episode_count
+        self.reward_tots = np.zeros(self.episode_count)
 
     def fn_init(self,gameboard):
         self.gameboard=gameboard
@@ -144,12 +145,12 @@ class TDQNAgent:
         self.exp_buffer = []
         #self.qnn.eval()
         self.dqn_target.eval()
-        self.optim = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
-        self.loss_fn = torch.nn.MSELoss()
+        self.optimizer = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
+        self.criterion = torch.nn.MSELoss()
         
         # Backpropagation
         #self.optimizer.zero_grad()
-        #self.loss_fn.backward()
+        #self.criterion.backward()
         #self.optimizer.step()
 
 
@@ -186,11 +187,17 @@ class TDQNAgent:
         # 'self.gameboard.cur_tile_type' identifier of the current tile that should be placed on the game board (integer between 0 and len(self.gameboard.tiles))
 
     def fn_select_action(self):
-        if np.random.rand() < self.epsilon:
+        
+        if np.random.rand() < max(self.epsilon, 1-self.episode/self.epsilon_scale):
             self.action_index = np.random.choice(16)
         else:
             self.action_index = self.dqn_action(self.state.float()).argmax()#.item()
-        pass
+
+        position_drop = self.action_index % self.gameboard.N_col
+        number_of_rotation = self.action_index // self.gameboard.N_col
+        self.gameboard.fn_move(position_drop, number_of_rotation)
+
+
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
