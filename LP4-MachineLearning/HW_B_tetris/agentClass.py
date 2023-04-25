@@ -113,7 +113,6 @@ class DeepQNetwork(torch.nn.Module):
         return x
 
 
-
 class TDQNAgent:
     # Agent for learning to play tetris using Q-learning
     def __init__(self,alpha,epsilon,epsilon_scale,replay_buffer_size,batch_size,sync_target_episode_count,episode_count):
@@ -130,34 +129,15 @@ class TDQNAgent:
 
     def fn_init(self,gameboard):
         self.gameboard=gameboard
-        # TO BE COMPLETED BY STUDENT
-        # This function should be written by you
-        # Instructions:
-        # In this function you could set up and initialize the states, actions, the Q-networks (one for calculating actions and one target network), 
-        # experience replay buffer and storage for the rewards
-        # You can use any framework for constructing the networks, for example pytorch or tensorflow
-        # This function should not return a value, store Q network etc as attributes of self
         self.dqn_action = DeepQNetwork()
         self.dqn_target = DeepQNetwork()
         self.actions = []
         self.replay = np.zeros([self.replay_buffer_size])
         self.reward_tots = np.zeros(self.episode_count)
         self.exp_buffer = []
-        #self.qnn.eval()
-        self.dqn_target.eval()
         self.optimizer = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
         self.criterion = torch.nn.MSELoss()
         
-        # Backpropagation
-        #self.optimizer.zero_grad()
-        #self.criterion.backward()
-        #self.optimizer.step()
-
-
-        # Useful variables: 
-        # 'gameboard.N_row' number of rows in gameboard
-        # 'gameboard.N_col' number of columns in gameboard
-        # 'len(gameboard.tiles)' number of different tiles
         # 'self.alpha' the learning rate for stochastic gradient descent
         # 'self.episode_count' the total number of episodes in the training
         # 'self.replay_buffer_size' the number of quadruplets stored in the experience replay buffer
@@ -197,7 +177,6 @@ class TDQNAgent:
         number_of_rotation = self.action_index // self.gameboard.N_col
         self.gameboard.fn_move(position_drop, number_of_rotation)
 
-
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
@@ -216,7 +195,22 @@ class TDQNAgent:
         # You can use this function to map out which actions are valid or not
 
     def fn_reinforce(self,batch):
-        pass
+        self.dqn_action.train()
+        self.dqn_target.eval()
+
+        for old_state, last_action, reward, state  in batch:
+            q_target = self.dqn_target(old_state)
+            q_values = self.dqn_action(old_state)[last_action]
+            if self.gameboard.gameover:
+                y = reward
+            else:
+                y = reward + q_target.argmax()
+            
+            self.loss = self.criterion(y, q_values)
+            self.optimizer.zero_grad()
+            self.loss.backward()
+            self.optimizer.step()        
+            
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
         # Instructions:
@@ -252,22 +246,21 @@ class TDQNAgent:
             self.fn_select_action()
             # TO BE COMPLETED BY STUDENT
             # Here you should write line(s) to copy the old state into the variable 'old_state' which is later stored in the ecperience replay buffer
-
+            self.old_state = torch.clone(self.state)
             # Drop the tile on the game board
             reward=self.gameboard.fn_drop()
 
             # TO BE COMPLETED BY STUDENT
             # Here you should write line(s) to add the current reward to the total reward for the current episode, so you can save it to disk later
-
+            self.reward_tots[self.episode] += reward
             # Read the new state
             self.fn_read_state()
 
             # TO BE COMPLETED BY STUDENT
             # Here you should write line(s) to store the state in the experience replay buffer
-
+            self.exp_buffer.append((self.old_state, self.action_index, reward, torch.clone(self.state)))
             if len(self.exp_buffer) >= self.replay_buffer_size:
-                # TO BE COMPLETED BY STUDENT
-                # Here you should write line(s) to create a variable 'batch' containing 'self.batch_size' quadruplets 
+                batch = random.sample(self.exp_buffer, self.batch_size)
                 self.fn_reinforce(batch)
 
 
