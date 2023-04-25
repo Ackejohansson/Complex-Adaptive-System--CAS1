@@ -4,6 +4,7 @@ import math
 import h5py
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import copy
 
 # This file provides the skeleton structure for the classes TQAgent and TDQNAgent to be completed by you, the student.
 # Locations starting with # TO BE COMPLETED BY STUDENT indicates missing code that should be written by you.
@@ -96,21 +97,23 @@ class TQAgent:
 
 import torch
 import torch.nn.functional as F
-from torch_geometric.nn import Linear
+#from torch_geometric.nn import Linear
+import torch.nn as nn
+
 
 class DeepQNetwork(torch.nn.Module):
     def __init__(self):
         super(DeepQNetwork, self).__init__()
-        self.lin1 = Linear(20, 64)
-        self.lin2 = Linear(64, 64)
-        self.lin3 = Linear(64, 16)
+        self.lin1 = nn.Linear(20, 64, dtype=torch.float64)
+        self.lin2 = nn.Linear(64, 64, dtype=torch.float64)
+        self.lin3 = nn.Linear(64, 16, dtype=torch.float64)
         
     def forward(self, x):
         x = F.relu(self.lin1(x))
         x = F.relu(self.lin2(x))
         x = self.lin3(x)
 
-        return x
+        return x#.detach()
 
 
 class TDQNAgent:
@@ -132,12 +135,12 @@ class TDQNAgent:
         self.dqn_action = DeepQNetwork()
         self.dqn_target = DeepQNetwork()
         self.actions = []
-        self.replay = np.zeros([self.replay_buffer_size])
         self.reward_tots = np.zeros(self.episode_count)
         self.exp_buffer = []
         self.optimizer = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
         self.criterion = torch.nn.MSELoss()
-        
+        #self.replay = np.zeros([self.replay_buffer_size])
+
         # 'self.alpha' the learning rate for stochastic gradient descent
         # 'self.episode_count' the total number of episodes in the training
         # 'self.replay_buffer_size' the number of quadruplets stored in the experience replay buffer
@@ -167,11 +170,11 @@ class TDQNAgent:
         # 'self.gameboard.cur_tile_type' identifier of the current tile that should be placed on the game board (integer between 0 and len(self.gameboard.tiles))
 
     def fn_select_action(self):
-        
+        # TODO might give wrong type out
         if np.random.rand() < max(self.epsilon, 1-self.episode/self.epsilon_scale):
             self.action_index = np.random.choice(16)
         else:
-            self.action_index = self.dqn_action(self.state.float()).argmax()#.item()
+            self.action_index = self.dqn_action(self.state).argmax()#.item()
 
         position_drop = self.action_index % self.gameboard.N_col
         number_of_rotation = self.action_index // self.gameboard.N_col
@@ -195,21 +198,20 @@ class TDQNAgent:
         # You can use this function to map out which actions are valid or not
 
     def fn_reinforce(self,batch):
+        # TODO dont go in here untill replay buffer is largeenough
         self.dqn_action.train()
-        self.dqn_target.eval()
+        self.dqn_target.eval() # hat
 
         for old_state, last_action, reward, state  in batch:
-            q_target = self.dqn_target(old_state)
-            q_values = self.dqn_action(old_state)[last_action]
-            if self.gameboard.gameover:
-                y = reward
-            else:
-                y = reward + q_target.argmax()
+            target = reward
+            if not self.gameboard.gameover:
+                target += self.dqn_target(state).max().item()
             
-            self.loss = self.criterion(y, q_values)
+            self.loss = self.criterion(self.dqn_action(old_state)[last_action], torch.tensor(target, dtype=torch.float64))
             self.optimizer.zero_grad()
             self.loss.backward()
-            self.optimizer.step()        
+            self.optimizer.step()
+            
             
         # TO BE COMPLETED BY STUDENT
         # This function should be written by you
@@ -237,23 +239,16 @@ class TDQNAgent:
                 raise SystemExit(0)
             else:
                 if (len(self.exp_buffer) >= self.replay_buffer_size) and ((self.episode % self.sync_target_episode_count)==0):
+                    self.dqn_target = copy.deepcopy(self.dqn_action)
                     pass
                     # TO BE COMPLETED BY STUDENT
                     # Here you should write line(s) to copy the current network to the target network
                 self.gameboard.fn_restart()
         else:
-            # Select and execute action (move the tile to the desired column and orientation)
             self.fn_select_action()
-            # TO BE COMPLETED BY STUDENT
-            # Here you should write line(s) to copy the old state into the variable 'old_state' which is later stored in the ecperience replay buffer
             self.old_state = torch.clone(self.state)
-            # Drop the tile on the game board
             reward=self.gameboard.fn_drop()
-
-            # TO BE COMPLETED BY STUDENT
-            # Here you should write line(s) to add the current reward to the total reward for the current episode, so you can save it to disk later
             self.reward_tots[self.episode] += reward
-            # Read the new state
             self.fn_read_state()
 
             # TO BE COMPLETED BY STUDENT
