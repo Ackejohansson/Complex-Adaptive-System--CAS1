@@ -165,20 +165,21 @@ class TDQNAgent:
 
 
     def fn_reinforce(self,batch):
-        # TODO dont go in here untill replay buffer is largeenough
+        old_state, last_action, reward, state, terminal  = batch
         self.dqn_action.train()
         self.dqn_target.eval() # hat
+        q_target = self.dqn_target(state)
+        q_action = self.dqn_action(old_state)
 
-        for old_state, last_action, reward, state  in batch:
-            target = reward
-            if not self.gameboard.gameover:
-                target += self.dqn_target(state).max().item()
-            
-            self.loss = self.criterion(self.dqn_action(old_state)[last_action], torch.tensor(target, dtype=torch.float64))
-            self.optimizer.zero_grad()
-            self.loss.backward()
-            self.optimizer.step()
-            
+        
+        target = reward + (terminal == 0) * (torch.max(q_target, dim=-1).values)
+        q = q_action[range(self.batch_size), last_action]
+
+        self.loss = self.criterion(q, target)
+        self.optimizer.zero_grad()
+        self.loss.backward()
+        self.optimizer.step()
+        
 
     def fn_turn(self):
         if self.gameboard.gameover:
@@ -196,7 +197,6 @@ class TDQNAgent:
             else:
                 if (len(self.exp_buffer) >= self.replay_buffer_size) and ((self.episode % self.sync_target_episode_count)==0):
                     self.dqn_target = copy.deepcopy(self.dqn_action)
-                    pass
                     # TO BE COMPLETED BY STUDENT
                     # Here you should write line(s) to copy the current network to the target network
                 self.gameboard.fn_restart()
@@ -209,10 +209,12 @@ class TDQNAgent:
 
             # TO BE COMPLETED BY STUDENT
             # Here you should write line(s) to store the state in the experience replay buffer
-            self.exp_buffer.append((self.old_state, self.action_index, reward, torch.clone(self.state)))
+            self.exp_buffer.append((self.old_state, self.action_index, reward, torch.clone(self.state), self.gameboard.gameover))
             if len(self.exp_buffer) >= self.replay_buffer_size:
                 batch = random.sample(self.exp_buffer, self.batch_size)
                 self.fn_reinforce(batch)
+                if len(self.exp_buffer) >= self.replay_buffer_size+1:
+                    self.exp_buffer.pop(0)
 
 
 class THumanAgent:
