@@ -38,10 +38,9 @@ keep track of time
 
 opendlvtestlogic.cpp
 
-chane auto atFrequenzy
+change auto atFrequenzy
 create a timevariable outside and link in to lambda and update for ecerystep
 instead of gsangle and pedal request get wheel speed
-
 instead of 0 so set sendersstamp with time
 
 in motor we want to recive the message we sent

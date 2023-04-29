@@ -12,7 +12,6 @@ theta_dot = (vr-vl)/(2*R)
 
 x, y, theta = np.zeros((3, len(t)))
 dt = t[1] - t[0]
-
 v = (vr+vl)/2
 
 for i in range(len(t)-1):
