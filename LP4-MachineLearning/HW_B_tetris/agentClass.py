@@ -209,6 +209,7 @@ class TDQNAgent:
                 self.fn_reinforce(batch)
                 if len(self.exp_buffer) >= self.replay_buffer_size+1:
                     self.exp_buffer.pop(0)
+                
 
 
 class THumanAgent:
