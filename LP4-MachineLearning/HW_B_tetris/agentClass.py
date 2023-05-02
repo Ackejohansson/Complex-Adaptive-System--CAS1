@@ -186,6 +186,7 @@ class TDQNAgent:
                 raise SystemExit(0)
             else:
                 if (len(self.exp_buffer) >= self.replay_buffer_size) and ((self.episode % self.sync_target_episode_count)==0):
+                    pass
                     self.dqn_target = copy.deepcopy(self.dqn_action)
                     # TO BE COMPLETED BY STUDENT
                     # Here you should write line(s) to copy the current network to the target network

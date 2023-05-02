@@ -141,24 +141,17 @@ class TDQNAgent:
         self.state = np.append(self.state, tile_type) # concatenate the state with the tile type
 
 
-    def get_valid_action(self, sorted_out):
-        for idx in sorted_out:
-            rotation = int(idx / 4)
-            position = idx % 4
-            if not self.gameboard.fn_move(position, rotation): 
-                return idx   
-
     def fn_select_action(self):
         self.dqn_action.eval()
         out = self.dqn_action(torch.tensor(self.state)).detach().numpy()
         if np.random.rand() < max(self.epsilon, 1-self.episode/self.epsilon_scale): # epsilon-greedy
-            self.action = random.randint(0, (4*4)-1)
+            self.action = np.random.choice(16)
         else: 
             self.action = np.argmax(out)
-        
-        rotation = int(self.action / 4)
-        position = self.action % 4
-        self.gameboard.fn_move(position, rotation)
+                
+        drop_position = self.action % self.gameboard.N_col
+        number_of_rotations = self.action // self.gameboard.N_col
+        self.gameboard.fn_move(drop_position, number_of_rotations)
 
 
     def fn_reinforce(self,batch):
@@ -168,11 +161,13 @@ class TDQNAgent:
         self.dqn_target.eval()
 
         for state, action, reward, next_state, terminal in batch:
-            y = reward
+            target = reward
             if not terminal:
-                out = self.dqn_target(torch.tensor(next_state)).detach().numpy()
-                y += max(out)
-            targets.append(torch.tensor(y, dtype=torch.float64))
+                # TODO Change here
+                #with torch.no_grad():
+                #self.dqn_target(torch.tensor(next_state)).max()
+                target += max(self.dqn_target(torch.tensor(next_state)).detach().numpy())
+            targets.append(torch.tensor(target, dtype=torch.float64))
             out = self.dqn_action(torch.tensor(state))
             action_value.append(out[action])
 
@@ -182,6 +177,32 @@ class TDQNAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+    """
+    def fn_reinforce(self, batch):
+    self.dqn_action.train()
+    self.dqn_target.eval()
+
+    targets = []
+    action_values = []
+    for state, action, reward, next_state, terminal in batch:
+        target = reward
+        if not terminal:
+            with torch.no_grad():
+                max_next_action_value = self.dqn_target(torch.tensor(next_state)).max()
+                target += max_next_action_value
+        targets.append(target)
+        
+        action_value = self.dqn_action(torch.tensor(state))[action]
+        action_values.append(action_value)
+
+    targets = torch.stack(targets, dtype=torch.float64)
+    action_values = torch.stack(action_values)
+
+    loss = self.criterion(action_values, targets)
+    self.optimizer.zero_grad()
+    loss.backward()
+    self.optimizer.step()
+    """
 
 
     def fn_turn(self):
@@ -192,14 +213,15 @@ class TDQNAgent:
             if self.episode%1000==0:
                 saveEpisodes=[1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000];
                 if self.episode in saveEpisodes:
-                    torch.save(self.dqn_action.state_dict(), 'qn_'+str(self.episode)+'.pth')
-                    torch.save(self.dqn_target.state_dict(), 'qnhat_'+str(self.episode)+'.pth')
+                    torch.save(self.dqn_action.state_dict(), 'dqn_action_'+str(self.episode)+'.pth')
+                    torch.save(self.dqn_target.state_dict(), 'dqn_target_'+str(self.episode)+'.pth')
                     pickle.dump(self.reward_tots, open('reward_tots_'+str(self.episode)+'.p', 'wb'))
             if self.episode>=self.episode_count:
                 raise SystemExit(0)
             else:
                 if (len(self.exp_buffer) >= self.replay_buffer_size) and ((self.episode % self.sync_target_episode_count)==0):
                     pass
+                    # TODO Dont pass
                     self.dqn_target = copy.deepcopy(self.dqn_action)
                 self.gameboard.fn_restart()
         else:
@@ -211,10 +233,9 @@ class TDQNAgent:
             self.exp_buffer.append((old_state, self.action, reward, self.state.copy(), self.gameboard.gameover))
 
             if len(self.exp_buffer) >= self.replay_buffer_size:
-                # TO BE COMPLETED BY STUDENT
-                # Here you should write line(s) to create a variable 'batch' containing 'self.batch_size' quadruplets 
-                batch = random.sample(self.exp_buffer, k=self.batch_size)
+                batch = random.sample(self.exp_buffer, self.batch_size)
                 self.fn_reinforce(batch)
+                # TODO + 1
                 if len(self.exp_buffer) >= self.replay_buffer_size + 2:
                     self.exp_buffer.pop(0) # Remove the oldest transition from the buffer
 
