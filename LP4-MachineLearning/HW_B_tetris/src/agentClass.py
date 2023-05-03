@@ -94,6 +94,7 @@ class TQAgent:
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
+from collections import deque
 
 class DeepQNetwork(torch.nn.Module):
     def __init__(self, hidden_channels):
@@ -127,8 +128,8 @@ class TDQNAgent:
         self.gameboard=gameboard
         self.dqn_action = DeepQNetwork(hidden_channels= 64)
         self.dqn_target = DeepQNetwork(hidden_channels= 64)
-        self.exp_buffer = []
         self.optimizer = torch.optim.Adam(self.dqn_action.parameters(), lr=self.alpha)
+        self.exp_buffer = deque(maxlen=self.replay_buffer_size)
 
 
     def fn_load_strategy(self,strategy_file):
@@ -156,21 +157,24 @@ class TDQNAgent:
     def fn_reinforce(self, batch):
         self.dqn_action.train()
         self.dqn_target.eval()
+
+        state, action, reward, next_state, terminal = zip(*batch)
+        reward = torch.tensor(reward)
+        terminal = torch.tensor(terminal)
+
+        outputs = self.dqn_action(torch.tensor(state))
+        with torch.no_grad():
+            target_outputs = self.dqn_target(torch.tensor(next_state))
+
+        max_q_values, _ = torch.max(target_outputs, dim=1)
+        targets = reward + (terminal == 0) * max_q_values
         
-        state = np.array([e[0] for e in batch])
-        action = np.array([e[1] for e in batch])
-        reward = np.array([e[2] for e in batch], dtype=float)
-        next_state = np.array([e[3] for e in batch])
-        terminal = np.array([e[4] for e in batch])
-
-        outputs = self.dqn_action(torch.from_numpy(state))
-        targets = reward + (terminal == 0)*np.amax(self.dqn_target(torch.from_numpy(next_state)).detach().numpy(), axis=1)
-        loss = torch.square(outputs[range(len(action)), action] - torch.tensor(targets)).sum()
-
+        loss = torch.square(outputs[range(len(action)), action] - targets).sum()
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
         self.dqn_action.eval()
+
         
 
     def fn_turn(self):
@@ -215,11 +219,10 @@ class TDQNAgent:
             self.fn_read_state()
             self.exp_buffer.append((old_state, self.action, reward, self.state.copy(), self.gameboard.gameover))
 
-            if len(self.exp_buffer) >= self.replay_buffer_size:
+            if len(self.exp_buffer) == self.replay_buffer_size:
                 batch = random.sample(self.exp_buffer, self.batch_size)
                 self.fn_reinforce(batch)
-                if len(self.exp_buffer) >= self.replay_buffer_size + 1:
-                    self.exp_buffer.pop(0)
+
 
 
 class THumanAgent:
