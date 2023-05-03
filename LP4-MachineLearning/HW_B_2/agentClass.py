@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import copy
 import pickle 
 import pandas as pd
+import os
 
 
 class TQAgent:
@@ -120,11 +121,10 @@ class TDQNAgent:
         self.sync_target_episode_count=sync_target_episode_count
         self.episode=0
         self.episode_count=episode_count
-        self.reward_tots=[0]*episode_count
+        self.reward_tots= np.zeros(episode_count)
 
     def fn_init(self,gameboard):
         self.gameboard=gameboard
-        self.actions = [7, 6, 12, 3] # pillar, slash, L, square
         self.dqn_action = DeepQNetwork(hidden_channels= 64)
         self.dqn_target = DeepQNetwork(hidden_channels= 64)
         self.exp_buffer = []
@@ -140,43 +140,41 @@ class TDQNAgent:
         self.state = self.gameboard.board.flatten()
         tile_type = -np.ones(len(self.gameboard.tiles))
         tile_type[self.gameboard.cur_tile_type] = 1
-        self.state = np.append(self.state, tile_type) # concatenate the state with the tile type
+        self.state = np.append(self.state, tile_type)
 
 
     def fn_select_action(self):
         self.dqn_action.eval()
         
-        if np.random.rand() < max(self.epsilon, 1-self.episode/self.epsilon_scale): # epsilon-greedy
+        if np.random.rand() < max(self.epsilon, 1-self.episode/self.epsilon_scale):
             self.action = np.random.choice(16)
         else: 
             self.action = self.dqn_action(torch.tensor(self.state)).argmax().item()
-            #TODO int( self.dqn_action(torch.tensor(self.state)).argmax)
                 
         drop_position = self.action % self.gameboard.N_col
         number_of_rotations = self.action // self.gameboard.N_col
         self.gameboard.fn_move(drop_position, number_of_rotations)
 
 
-    def fn_reinforce(self,batch):
+    def fn_reinforce(self, batch):
         self.dqn_action.train()
         self.dqn_target.eval()
-        targets = []
-        action_values = []
-        for state, action, reward, next_state, terminal in batch:
-            target = reward
-            if not terminal:
-                    target += self.dqn_target(torch.tensor(next_state)).max()
-            targets.append(torch.tensor(target, dtype=torch.float64))
-            action_value = self.dqn_action(torch.tensor(state))[action]
-            action_values.append(action_value)
+        
+        state = np.array([e[0] for e in batch])
+        action = np.array([e[1] for e in batch])
+        reward = np.array([e[2] for e in batch], dtype=float)
+        next_state = np.array([e[3] for e in batch])
+        terminal = np.array([e[4] for e in batch])
 
-        targets = torch.stack(targets)
-        action_values = torch.stack(action_values)
+        
+        outputs = self.dqn_action(torch.from_numpy(state))
+        targets = reward + (terminal == 0)*np.amax(self.dqn_target(torch.from_numpy(next_state)).detach().numpy(), axis=1)
+        loss = torch.square(outputs[range(len(action)), action] - torch.tensor(targets)).sum()
 
-        loss = self.criterion(action_values, targets)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        self.dqn_action.eval()
         
 
 
@@ -188,9 +186,19 @@ class TDQNAgent:
             if self.episode%1000==0:
                 saveEpisodes=[1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000];
                 if self.episode in saveEpisodes:
-                    torch.save(self.dqn_action.state_dict(), 'dqn_action_'+str(self.episode)+'.pth')
-                    torch.save(self.dqn_target.state_dict(), 'dqn_target_'+str(self.episode)+'.pth')
-                    pickle.dump(self.reward_tots, open('reward_tots_'+str(self.episode)+'.p', 'wb'))
+                    # Define file paths for saving models and rewards
+                    dqn_action_path = os.path.join(os.getcwd(), f"dqn_action_{self.episode}.pth")
+                    dqn_target_path = os.path.join(os.getcwd(), f"dqn_target_{self.episode}.pth")
+                    reward_tots_path = os.path.join(os.getcwd(), f"reward_tots_{self.episode}.p")
+
+                    # Save the DQN action and target models
+                    torch.save(self.dqn_action.state_dict(), dqn_action_path)
+                    torch.save(self.dqn_target.state_dict(), dqn_target_path)
+
+                    # Save the reward totals using pickle
+                    with open(reward_tots_path, "wb") as f:
+                        pickle.dump(self.reward_tots, f)
+
             if self.episode>=self.episode_count:
                 avg = pd.Series(self.reward_tots).rolling(window=50, center=False).mean().values
                 plt.plot(self.reward_tots, label='Reward')
