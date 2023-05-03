@@ -183,9 +183,9 @@ class TDQNAgent:
                 saveEpisodes=[1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000];
                 if self.episode in saveEpisodes:
                     # Define file paths for saving models and rewards
-                    dqn_action_path = os.path.join(os.getcwd(), f"dqn_action_{self.episode}.pth")
-                    dqn_target_path = os.path.join(os.getcwd(), f"dqn_target_{self.episode}.pth")
-                    reward_tots_path = os.path.join(os.getcwd(), f"reward_tots_{self.episode}.p")
+                    dqn_action_path = os.path.join(os.getcwd(), 'Strategy', f"dqn_action_{self.episode}.pth")
+                    dqn_target_path = os.path.join(os.getcwd(), 'Strategy', f"dqn_target_{self.episode}.pth")
+                    reward_tots_path = os.path.join(os.getcwd(), 'Reward',f"reward_tots_{self.episode}.p")
 
                     # Save the DQN action and target models
                     torch.save(self.dqn_action.state_dict(), dqn_action_path)
