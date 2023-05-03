@@ -1,12 +1,9 @@
 import numpy as np
 import random
-import math
-import h5py
 import matplotlib.pyplot as plt
-import tensorflow as tf
 import copy
-import time
 import pickle 
+import pandas as pd
 
 
 class TQAgent:
@@ -59,7 +56,7 @@ class TQAgent:
         if self.gameboard.gameover:
             self.episode+=1
             if self.episode%100==0:
-                print('episode '+str(self.episode)+'/'+str(self.episode_count)+' (reward: ',str(np.sum(self.reward_tots[range(self.episode-100,self.episode)])),')')
+                print('episode '+str(self.episode)+'/'+str(self.episode_count)+' (reward: ',str(np.mean(self.reward_tots[range(self.episode-100,self.episode)])),')')
             if self.episode%1000==0:
                 saveEpisodes=[1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000]
                 if self.episode in saveEpisodes:
@@ -67,7 +64,12 @@ class TQAgent:
                     # np.savez
                     pass
             if self.episode>=self.episode_count:
-                plt.plot(self.reward_tots)
+                avg = pd.Series(self.reward_tots).rolling(window=50, center=False).mean().values
+                plt.plot(self.reward_tots, label='Reward')
+                plt.plot(avg, label='Moving avrage')
+                plt.xlabel('Episodes')
+                plt.ylabel('Reward value')
+                plt.legend()
                 plt.show()
                 raise SystemExit(0)
             else:
@@ -143,11 +145,12 @@ class TDQNAgent:
 
     def fn_select_action(self):
         self.dqn_action.eval()
-        out = self.dqn_action(torch.tensor(self.state)).detach().numpy()
+        
         if np.random.rand() < max(self.epsilon, 1-self.episode/self.epsilon_scale): # epsilon-greedy
             self.action = np.random.choice(16)
         else: 
-            self.action = np.argmax(out)
+            self.action = self.dqn_action(torch.tensor(self.state)).argmax().item()
+            #TODO int( self.dqn_action(torch.tensor(self.state)).argmax)
                 
         drop_position = self.action % self.gameboard.N_col
         number_of_rotations = self.action // self.gameboard.N_col
@@ -155,54 +158,26 @@ class TDQNAgent:
 
 
     def fn_reinforce(self,batch):
-        targets = []
-        action_value = []
         self.dqn_action.train()
         self.dqn_target.eval()
-
+        targets = []
+        action_values = []
         for state, action, reward, next_state, terminal in batch:
             target = reward
             if not terminal:
-                # TODO Change here
-                #with torch.no_grad():
-                #self.dqn_target(torch.tensor(next_state)).max()
-                target += max(self.dqn_target(torch.tensor(next_state)).detach().numpy())
+                    target += self.dqn_target(torch.tensor(next_state)).max()
             targets.append(torch.tensor(target, dtype=torch.float64))
-            out = self.dqn_action(torch.tensor(state))
-            action_value.append(out[action])
+            action_value = self.dqn_action(torch.tensor(state))[action]
+            action_values.append(action_value)
 
         targets = torch.stack(targets)
-        action_value = torch.stack(action_value)
-        loss = self.criterion(action_value, targets)
+        action_values = torch.stack(action_values)
+
+        loss = self.criterion(action_values, targets)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-    """
-    def fn_reinforce(self, batch):
-    self.dqn_action.train()
-    self.dqn_target.eval()
-
-    targets = []
-    action_values = []
-    for state, action, reward, next_state, terminal in batch:
-        target = reward
-        if not terminal:
-            with torch.no_grad():
-                max_next_action_value = self.dqn_target(torch.tensor(next_state)).max()
-                target += max_next_action_value
-        targets.append(target)
         
-        action_value = self.dqn_action(torch.tensor(state))[action]
-        action_values.append(action_value)
-
-    targets = torch.stack(targets, dtype=torch.float64)
-    action_values = torch.stack(action_values)
-
-    loss = self.criterion(action_values, targets)
-    self.optimizer.zero_grad()
-    loss.backward()
-    self.optimizer.step()
-    """
 
 
     def fn_turn(self):
@@ -217,11 +192,16 @@ class TDQNAgent:
                     torch.save(self.dqn_target.state_dict(), 'dqn_target_'+str(self.episode)+'.pth')
                     pickle.dump(self.reward_tots, open('reward_tots_'+str(self.episode)+'.p', 'wb'))
             if self.episode>=self.episode_count:
+                avg = pd.Series(self.reward_tots).rolling(window=50, center=False).mean().values
+                plt.plot(self.reward_tots, label='Reward')
+                plt.plot(avg, label='Moving avrage')
+                plt.xlabel('Episodes')
+                plt.ylabel('Reward value')
+                plt.legend()
+                plt.show()
                 raise SystemExit(0)
             else:
                 if (len(self.exp_buffer) >= self.replay_buffer_size) and ((self.episode % self.sync_target_episode_count)==0):
-                    pass
-                    # TODO Dont pass
                     self.dqn_target = copy.deepcopy(self.dqn_action)
                 self.gameboard.fn_restart()
         else:
@@ -235,9 +215,8 @@ class TDQNAgent:
             if len(self.exp_buffer) >= self.replay_buffer_size:
                 batch = random.sample(self.exp_buffer, self.batch_size)
                 self.fn_reinforce(batch)
-                # TODO + 1
-                if len(self.exp_buffer) >= self.replay_buffer_size + 2:
-                    self.exp_buffer.pop(0) # Remove the oldest transition from the buffer
+                if len(self.exp_buffer) >= self.replay_buffer_size + 1:
+                    self.exp_buffer.pop(0)
 
 
 class THumanAgent:
@@ -245,10 +224,8 @@ class THumanAgent:
         self.episode=0
         self.reward_tots=[0]
         self.gameboard=gameboard
-
     def fn_read_state(self):
         pass
-
     def fn_turn(self,pygame):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

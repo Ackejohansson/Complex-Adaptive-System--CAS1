@@ -1,11 +1,6 @@
-import numpy as np
 import pygame
-import h5py
 import gameboardClass
 import agentClass
-
-
-
 
 PARAM_TASK1a=1
 PARAM_TASK1b=2
