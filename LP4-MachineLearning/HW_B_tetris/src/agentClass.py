@@ -138,7 +138,6 @@ class TDQNAgent:
     def fn_read_state(self):
         tile_type = -np.ones(len(self.gameboard.tiles))
         tile_type[self.gameboard.cur_tile_type] = 1
-        
         self.state = np.append(self.gameboard.board.flatten(), tile_type)
 
 

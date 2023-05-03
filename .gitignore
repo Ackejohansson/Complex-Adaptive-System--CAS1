@@ -26,3 +26,4 @@ LP4-MachineLearning/TIF360-project
 venv/
 __pycache__/
 .idea/
+.vscode/
