@@ -28,12 +28,10 @@ class TQAgent:
         self.possible_actions = possible_actions
 
     def fn_load_strategy(self,strategy_file):
-        # np.load
-        pass
+        self.qtables = pickle.load(open(strategy_file, 'rb'))
 
     def fn_read_state(self):
-        self.state = np.reshape(self.gameboard.board, (1, self.gameboard.N_row*self.gameboard.N_col))
-        self.state = tuple(np.append(self.state, self.gameboard.cur_tile_type))
+        self.state = tuple(np.append(self.gameboard.board.flatten(), self.gameboard.cur_tile_type))
         if self.state not in self.qtable:
             self.qtable[self.state] = np.zeros(int(sum(self.possible_actions[self.gameboard.cur_tile_type])))
 
@@ -124,6 +122,7 @@ class TDQNAgent:
         self.episode_count=episode_count
         self.reward_tots= np.zeros(episode_count)
 
+
     def fn_init(self,gameboard):
         self.gameboard=gameboard
         self.dqn_action = DeepQNetwork(hidden_channels= 64)
@@ -168,13 +167,12 @@ class TDQNAgent:
 
         max_q_values, _ = torch.max(target_outputs, dim=1)
         targets = reward + (terminal == 0) * max_q_values
-        
         loss = torch.square(outputs[range(len(action)), action] - targets).sum()
+
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
         self.dqn_action.eval()
-
         
 
     def fn_turn(self):
