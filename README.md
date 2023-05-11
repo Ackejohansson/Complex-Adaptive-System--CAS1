@@ -6,9 +6,9 @@ FFR135 - Artificial neural networks
 FFR105 - Stochastic optimization  
 FFR120 - Simulation of complex systems  
 TIF155 - Dynamical systems  
-FFR110 - Computational biology
-TME290 - Autonomous robots
-TIF360 - Advanced machinelearning with neural networks
+FFR110 - Computational biology 
+TME290 - Autonomous robots  
+TIF360 - Advanced machinelearning with neural networks 
 
 
 ## License
