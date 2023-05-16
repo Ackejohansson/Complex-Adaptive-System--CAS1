@@ -18,10 +18,8 @@ t3 = 30
 t4 = 40
 dt = 0.005
 
-
 def read_data(file_name, v1, v2, v3):
-    file_path = os.path.join(os.getcwd(), file_name)
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(os.path.join('data', file_name))
     v1 = df[v1].to_numpy(dtype=np.float64)
     v2 = df[v2].to_numpy(dtype=np.float64)
     if v3 != None:
@@ -31,20 +29,27 @@ def read_data(file_name, v1, v2, v3):
 
 
 def get_position(theta_dot, velocity):
-    number_of_steps = len(theta_dot)
-    x, y, theta = np.zeros((3, number_of_steps))
-    for i in range(number_of_steps-1):
+    num_steps = len(theta_dot)
+    x, y, theta = np.zeros((3, num_steps))
+    for i in range(num_steps - 1):
         theta[i+1] = theta[i] + theta_dot[i] * dt
         x[i+1] = x[i] + velocity[i+1] * np.cos(theta[i+1]) * dt
         y[i+1] = y[i] + velocity[i+1] * np.sin(theta[i+1]) * dt
-    
     return x, y
 
 
-def plot_motion(x, y, label):
-    plt.plot(x,y, label=label)
+def plot_motion(x_list, y_list, labels):
+    for x, y, label in zip(x_list, y_list, labels):
+        plt.plot(x, y, label=label)
     plt.legend(loc='upper right')
     plt.axis('equal')
+    if len(x_list) == 3:
+        filename = 'odometry_gnss_gt.png'
+    if len(x_list) == 4:
+       filename = 'kalman.png'
+    plt.savefig(os.path.join('figures', filename))
+    plt.show()
+
 
 def kalman_filter(vl, vr, gnss_x, gnss_y):
     # Create a kalman filter that merges odometry and gnss data
@@ -61,13 +66,12 @@ def main():
     x, y = get_position(theta_dot, velocity)
 
     #kf_x, kf_y = kalman_filter(vl, vr, gnss_x, gnss_y)
-    #plot_motion(kf_x, kf_y, label='kalman filter')
-    plot_motion(x, y, label='odometry')
-    plot_motion(gnss_x, gnss_y, label='gnss')
-    plot_motion(gt_x, gt_y, label='ground truth')
-    plt.show()
+
+    plot_motion([x, gnss_x, gt_x], [y, gnss_y, gt_y], ['odometry', 'gnss', 'ground truth'])
+
 
 
 if __name__== '__main__':
     main()
+
 
