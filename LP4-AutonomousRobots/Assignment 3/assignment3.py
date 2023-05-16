@@ -39,8 +39,7 @@ def get_position(theta_dot, velocity):
 
 
 def plot_motion(x_list, y_list, labels):
-    for x, y, label in zip(x_list, y_list, labels):
-        plt.plot(x, y, label=label)
+    [plt.plot(x, y, label=label) for x, y, label in zip(x_list, y_list, labels)]
     plt.legend(loc='upper right')
     plt.axis('equal')
     if len(x_list) == 3:
