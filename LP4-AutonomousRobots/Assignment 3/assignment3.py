@@ -50,9 +50,25 @@ def plot_motion(x_list, y_list, labels):
     plt.show()
 
 
-def kalman_filter(vl, vr, gnss_x, gnss_y):
-    # Create a kalman filter that merges odometry and gnss data
-    pass
+def kalman_filter(vl, vr, gnns_dict, time):
+    # initialize matricies
+    Q = np.eye(4)*0.1 
+    R = np.eye(2)*0.1
+    P = np.eye(4)*0.1
+    w = np.zeros((4,1))
+    v = np.zeros((2,1))
+    u = np.zeros((2,1))
+
+    # initialize state
+    for t in time:
+        if t in gnns_dict:
+            # update state with kalmann filter
+            # Predict
+            x, y = gnns_dict[t]
+            z = np.array([[x], [y]])
+            x_hat = x_hat + K @ (z - H @ x_hat)
+            P = (np.eye(4) - K @ H) @ P
+            # Update
     
 
 def main():
@@ -67,7 +83,7 @@ def main():
     velocity = (vr+vl)/2
     x, y = get_position(theta_dot, velocity)
 
-    #kf_x, kf_y = kalman_filter(vl, vr, gnss_x, gnss_y)
+    kf_x, kf_y = kalman_filter(vl, vr, gnss_dict, time)
 
     plot_motion([x, gnss_x, gt_x], [y, gnss_y, gt_y], ['odometry', 'gnss', 'ground truth'])
 
