@@ -56,8 +56,11 @@ def kalman_filter(vl, vr, gnss_x, gnss_y):
     
 
 def main():
-    vl, vr, _ = read_data('wheelspeeds-1.csv', 'vl', 'vr', 'time')
-    gnss_x, gnss_y = read_data('gnss-1.csv', 'x', 'y', None)
+    time, vl, vr = read_data('wheelspeeds-1.csv', 'time', 'vl', 'vr')
+    t, gnss_x, gnss_y = read_data('gnss-1.csv', 't', 'x', 'y')
+    gnss_dict = {t[i]: (gnss_x[i], gnss_y[i]) for i in range(len(t))}
+    # save dict with t as key and gnss_x, gnss_y as values
+    
     gt_x, gt_y, _ = read_data('groundtruth-1.csv', 'x', 'y', 'phi')
     
     theta_dot = (vr-vl)/(2*R)
