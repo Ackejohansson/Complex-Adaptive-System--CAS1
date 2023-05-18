@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import numpy as np
 from sklearn.metrics import mean_squared_error as MSE
+import plot
 
 M = 14.6
 R = 0.27
@@ -36,35 +37,15 @@ def get_position(theta_dot, velocity):
         y[i+1] = y[i] + velocity[i+1] * np.sin(theta[i+1]) * dt
     return x, y, theta
 
-def plot_mse(mse):
-    plt.plot(mse)
-    plt.xlabel('Time')
-    plt.ylabel('MSE')
-    plt.title('MSE Evolution')
-    plt.show()
-
-def plot_covariance(cov_history, time):
-    plt.figure()
-    for i in range(4):
-        cov_i = [cov[i, i] for cov in cov_history]  # Extract the diagonal elements for variable i
-        plt.plot(time, cov_i, label=f'Var {i+1}')
-    plt.xlabel('Time')
-    plt.ylabel('Covariance')
-    plt.title('Covariance Evolution')
-    plt.legend()
-    plt.savefig(os.path.join('figures', 'covariance.png'))
-    plt.show()
-
-def plot_motion(x_list, y_list, labels):
-    [plt.plot(x, y, label=label) for x, y, label in zip(x_list, y_list, labels)]
-    plt.legend(loc='upper right')
-    plt.axis('equal')
-    if len(x_list) == 3:
-        filename = 'odometry_gnss_gt.png'
-    if len(x_list) == 4:
-       filename = 'kalman.png'
-    plt.savefig(os.path.join('figures', filename))
-    plt.show()
+def compute_mse(kf_x, kf_y, gt_x, gt_y):
+    mse_values = []
+    for i in range(len(gt_x)):
+        mse_values.append(
+            np.mean((np.array(gt_x[:i + 1]) - np.array(kf_x[:i + 1])) ** 2) +
+            np.mean((np.array(gt_y[:i + 1]) - np.array(kf_y[:i + 1])) ** 2)
+        )
+    increments = np.arange(1, len(gt_x) + 1)
+    return increments, mse_values
 
 def get_xhat(xhat, index, theta_dot, v):
     xhat[0] = v[index]
@@ -76,7 +57,6 @@ def get_F(xhat):
                      [0, 1, 0, 0],
                      [(np.cos(xhat[1]))*dt, (-xhat[0]*np.sin(xhat[1]))*dt, 1, 0],
                      [(np.sin(xhat[1]))*dt, (xhat[0]*np.cos(xhat[1]))*dt, 0, 1]])
-
 
 def kalman_filter(gnns_dict, time, theta, v, x, y, theta_dot):
     state = np.zeros((len(time), 4))
@@ -112,12 +92,11 @@ def main():
     x, y, theta = get_position(theta_dot, velocity)
 
     kf_x, kf_y, cov_history = kalman_filter(gnss_dict, time, theta, velocity, x, y, theta_dot)
-    mse = ((gt_x-kf_x)**2 + (gt_y-kf_y)**2)
-    plot_mse(mse)
     
-    print('MSE: ', mse)
-    plot_covariance(cov_history, time)
-    plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['odometry', 'gnss', 'ground truth', 'kalman'])
+    increments, mse_values = compute_mse(kf_x, kf_y, gt_x, gt_y)
+    plot.plot_mse(increments, mse_values)
+    plot.plot_covariance(cov_history, time)
+    plot.plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['odometry', 'gnss', 'ground truth', 'kalman'])
 
 
 if __name__== '__main__':
