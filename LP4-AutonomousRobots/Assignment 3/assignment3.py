@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import numpy as np
-from scipy.linalg import block_diag
 
 M = 14.6
 R = 0.27
@@ -35,7 +34,7 @@ def get_position(theta_dot, velocity):
         theta[i+1] = theta[i] + theta_dot[i] * dt
         x[i+1] = x[i] + velocity[i+1] * np.cos(theta[i+1]) * dt
         y[i+1] = y[i] + velocity[i+1] * np.sin(theta[i+1]) * dt
-    return x, y
+    return x, y, theta
 
 
 def plot_motion(x_list, y_list, labels):
@@ -50,25 +49,33 @@ def plot_motion(x_list, y_list, labels):
     plt.show()
 
 
-def kalman_filter(vl, vr, gnns_dict, time):
+def kalman_filter(vl, vr, gnns_dict, time, theta, v, x, y, theta_dot):
     # initialize matricies
-    Q = np.eye(4)*0.1 
-    R = np.eye(2)*0.1
-    P = np.eye(4)*0.1
-    w = np.zeros((4,1))
-    v = np.zeros((2,1))
-    u = np.zeros((2,1))
+    state = np.zeros((len(time), 2))
+    u = np.array([np.zeros([len(theta_dot)]), theta_dot, x, y])*dt
+
+    F = np.array([[1, 0, 0, 0],
+                  [0, 1, 0, 0],
+                  [dt*np.cos(theta), v*np.sin(theta)*dt, 1, 0],
+                  [dt*np.sin(theta), -v*np.cos(theta)*dt, 0, 1]])
+    H = np.eye(4)
+    H[:2, :2] = 0
+    Q = np.eye(4)*0.01   
+    R = np.eye(4)*0.01
+    P = np.eye(4)
 
     # initialize state
-    for t in time:
+    xhat = np.array([v[0], theta[0], x[0], y[0]])
+    for index, t in enumerate(time):
+        xhat = xhat + u[:,index]
+        P = F @ P @ F.T + Q
         if t in gnns_dict:
-            # update state with kalmann filter
-            # Predict
-            x, y = gnns_dict[t]
-            z = np.array([[x], [y]])
-            x_hat = x_hat + K @ (z - H @ x_hat)
-            P = (np.eye(4) - K @ H) @ P
-            # Update
+            G = P @ H.T @ np.linalg.pinv(H @ P @ H.T + R)
+            xhat = xhat + G @ (gnns_dict[t] - xhat)
+            P = (np.eye(4) - G @ H) @ P
+        state[index] = xhat[:2]
+    return state[0], state[1]
+            
     
 
 def main():
@@ -81,11 +88,11 @@ def main():
     
     theta_dot = (vr-vl)/(2*R)
     velocity = (vr+vl)/2
-    x, y = get_position(theta_dot, velocity)
+    x, y, theta = get_position(theta_dot, velocity)
 
-    kf_x, kf_y = kalman_filter(vl, vr, gnss_dict, time)
+    kf_x, kf_y = kalman_filter(vl, vr, gnss_dict, time, theta, velocity, x, y, theta_dot)
 
-    plot_motion([x, gnss_x, gt_x], [y, gnss_y, gt_y], ['odometry', 'gnss', 'ground truth'])
+    plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['odometry', 'gnss', 'ground truth', 'kalman'])
 
 
 
