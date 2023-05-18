@@ -19,11 +19,11 @@ t4 = 40
 dt = 0.005
 straight_parameters = {
     'Q': np.eye(4) * 0.001,
-    'R': np.eye(4) * 0.5,
+    'R': np.eye(4) * 0.55,
 }
 turning_parameters = {
-    'Q': np.eye(4) * 0.2, # How much we trust our GNSS
-    'R': np.eye(4) * 0.0001,  # How much we trust our Kinematic model
+    'Q': np.eye(4) * 0.4, # How much we trust our GNSS
+    'R': np.eye(4) * 0.001,  # How much we trust our Kinematic model
 }
 Q = straight_parameters['Q'] 
 R = straight_parameters['R']
@@ -123,8 +123,8 @@ def main():
     
     increments, mse_values = compute_mse(kf_x, kf_y, gt_x, gt_y)
     print('MSE: ', sum(mse_values))
-    #plot.plot_mse(increments, mse_values)
-    #plot.plot_covariance(cov_history, time)
+    plot.plot_mse(increments, mse_values)
+    plot.plot_covariance(cov_history, time)
     plot.plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['Odometry', 'GNSS', 'Ground Truth', 'Kalman'])
 
 
