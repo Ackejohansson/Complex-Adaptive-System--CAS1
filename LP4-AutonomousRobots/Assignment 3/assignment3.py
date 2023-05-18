@@ -62,8 +62,8 @@ def kalman_filter(gnns_dict, time, theta, v, x, y, theta_dot):
     state = np.zeros((len(time), 4))
     cov_history = []
     P = np.eye(4)
-    Q = np.eye(4) * 0.01   
-    R = np.eye(4) * 0.01
+    Q = np.eye(4) * 0.001
+    R = np.eye(4) * 0.3
     H = np.eye(4)
     H[:2, :2] = 0
 
@@ -94,9 +94,10 @@ def main():
     kf_x, kf_y, cov_history = kalman_filter(gnss_dict, time, theta, velocity, x, y, theta_dot)
     
     increments, mse_values = compute_mse(kf_x, kf_y, gt_x, gt_y)
+    print('MSE: ', sum(mse_values))
     plot.plot_mse(increments, mse_values)
     plot.plot_covariance(cov_history, time)
-    plot.plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['odometry', 'gnss', 'ground truth', 'kalman'])
+    plot.plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['Odometry', 'GNSS', 'Ground Truth', 'Kalman'])
 
 
 if __name__== '__main__':
