@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import numpy as np
+from sklearn.metrics import mean_squared_error as MSE
 
 M = 14.6
 R = 0.27
@@ -62,10 +63,10 @@ def get_F(xhat):
 def kalman_filter(gnns_dict, time, theta, v, x, y, theta_dot):
     state = np.zeros((len(time), 4))
     P = np.eye(4)
-    H = P.copy()
+    Q = np.eye(4) * 0.01   
+    R = np.eye(4) * 0.01
+    H = np.eye(4)
     H[:2, :2] = 0
-    Q = P * 0.01   
-    R = P * 0.1
 
     xhat = np.array([v[0], theta[0], x[0], y[0]])
     for index, t in enumerate(time):
@@ -74,11 +75,10 @@ def kalman_filter(gnns_dict, time, theta, v, x, y, theta_dot):
         P = F @ P @ F.T + Q
         if t in gnns_dict:
             G = P @ H.T @ np.linalg.pinv(H @ P @ H.T + R)
-            xhat += + G @ (np.array([0, 0, gnns_dict[t][0], gnns_dict[t][1]]) - xhat)
+            xhat += G @ (np.array([0, 0, gnns_dict[t][0], gnns_dict[t][1]]) - xhat)
             P = (np.eye(4) - G @ H) @ P
         state[index] = xhat
     return state[:,2], state[:,3]
-
     
 
 def main():
@@ -92,6 +92,8 @@ def main():
     x, y, theta = get_position(theta_dot, velocity)
 
     kf_x, kf_y = kalman_filter(gnss_dict, time, theta, velocity, x, y, theta_dot)
+    mse = MSE([gt_x, gt_y], [kf_x, kf_y])
+    print('MSE: ', mse)
     plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['odometry', 'gnss', 'ground truth', 'kalman'])
 
 
