@@ -3,11 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import numpy as np
-from sklearn.metrics import mean_squared_error as MSE
 import plot
 
 M = 14.6
-R = 0.27
+car_radius = 0.27
 r = 0.27
 I = 0.36
 alpha = 0.3
@@ -18,6 +17,17 @@ t2 = 20
 t3 = 30
 t4 = 40
 dt = 0.005
+straight_parameters = {
+    'Q': np.eye(4) * 0.001,
+    'R': np.eye(4) * 0.5,
+}
+turning_parameters = {
+    'Q': np.eye(4) * 0.2, # How much we trust our GNSS
+    'R': np.eye(4) * 0.0001,  # How much we trust our Kinematic model
+}
+Q = straight_parameters['Q'] 
+R = straight_parameters['R']
+is_turning = False
 
 def read_data(file_name, v1, v2, v3):
     df = pd.read_csv(os.path.join('data', file_name))
@@ -58,17 +68,35 @@ def get_F(xhat):
                      [(np.cos(xhat[1]))*dt, (-xhat[0]*np.sin(xhat[1]))*dt, 1, 0],
                      [(np.sin(xhat[1]))*dt, (xhat[0]*np.cos(xhat[1]))*dt, 0, 1]])
 
+def switch_state(turn):
+    global current_parameters, is_turning
+    if turn and not is_turning:
+        Q = turning_parameters['Q']
+        R = turning_parameters['R']
+        is_turning = True
+        print("Switched to turning parameters.")
+    elif not turn and is_turning:
+        Q = straight_parameters['Q']
+        R = straight_parameters['R']
+        is_turning = False
+        print("Switched to still parameters.")
+
+def update_turning(t):
+    if t > t2-2 and t < t3:
+        switch_state(turn=True)
+    elif t > t3+5:
+        switch_state(turn=False)
+
 def kalman_filter(gnns_dict, time, theta, v, x, y, theta_dot):
     state = np.zeros((len(time), 4))
     cov_history = []
     P = np.eye(4)
-    Q = np.eye(4) * 0.001
-    R = np.eye(4) * 0.3
     H = np.eye(4)
     H[:2, :2] = 0
 
     xhat = np.array([v[0], theta[0], x[0], y[0]])
     for index, t in enumerate(time):
+        update_turning(t)
         xhat = get_xhat(xhat, index, theta_dot, v)
         F = get_F(xhat)    
         P = F @ P @ F.T + Q
@@ -87,7 +115,7 @@ def main():
     gnss_dict = {t[i]: (gnss_x[i], gnss_y[i]) for i in range(len(t))}
     gt_x, gt_y, _ = read_data('groundtruth-1.csv', 'x', 'y', 'phi')
     
-    theta_dot = (vr-vl)/(2*R)
+    theta_dot = (vr-vl)/(2*car_radius)
     velocity = (vr+vl)/2
     x, y, theta = get_position(theta_dot, velocity)
 
@@ -95,8 +123,8 @@ def main():
     
     increments, mse_values = compute_mse(kf_x, kf_y, gt_x, gt_y)
     print('MSE: ', sum(mse_values))
-    plot.plot_mse(increments, mse_values)
-    plot.plot_covariance(cov_history, time)
+    #plot.plot_mse(increments, mse_values)
+    #plot.plot_covariance(cov_history, time)
     plot.plot_motion([x, gnss_x, gt_x, kf_x], [y, gnss_y, gt_y, kf_y], ['Odometry', 'GNSS', 'Ground Truth', 'Kalman'])
 
 
