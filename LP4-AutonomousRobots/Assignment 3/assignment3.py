@@ -1,30 +1,22 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import numpy as np
 import plot
 
-M = 14.6
+# Constants
 car_radius = 0.27
 r = 0.27
-I = 0.36
-alpha = 0.3
-beta = 0.4
-
-t1 = 10
-t2 = 20
-t3 = 30
-t4 = 40
+t1, t2, t3, t4 = 10, 20, 30, 40
 dt = 0.005
+
+# Parameters
 straight_parameters = {
-    'Q': np.eye(4) * 0.001,
-    'R': np.eye(4) * 0.55,
-}
+    'Q': np.eye(4) * 0.001, # How much we trust our GNSS
+    'R': np.eye(4) * 0.55}  # How much we trust our Kinematic model
 turning_parameters = {
-    'Q': np.eye(4) * 0.4, # How much we trust our GNSS
-    'R': np.eye(4) * 0.001,  # How much we trust our Kinematic model
-}
+    'Q': np.eye(4) * 0.4, 
+    'R': np.eye(4) * 0.001}
 Q = straight_parameters['Q'] 
 R = straight_parameters['R']
 is_turning = False
@@ -65,17 +57,6 @@ def compute_mse(kf_x, kf_y, gt_x, gt_y):
     increments = np.arange(1, len(gt_x) + 1)
     return increments, mse_values
 
-def get_xhat(xhat, index, theta_dot, v):
-    xhat[0] = v[index]
-    u = np.array([0, theta_dot[index], xhat[0]*np.cos(xhat[1]), xhat[0]*np.sin(xhat[1])])*dt
-    return xhat + u
-
-def get_F(xhat):
-    return np.array([[1, 0, 0, 0],
-                     [0, 1, 0, 0],
-                     [(np.cos(xhat[1]))*dt, (-xhat[0]*np.sin(xhat[1]))*dt, 1, 0],
-                     [(np.sin(xhat[1]))*dt, (xhat[0]*np.cos(xhat[1]))*dt, 0, 1]])
-
 def switch_state(turn):
     global current_parameters, is_turning
     if turn and not is_turning:
@@ -94,6 +75,17 @@ def update_turning(t):
         switch_state(turn=True)
     elif t > t3+5:
         switch_state(turn=False)
+
+def get_xhat(xhat, index, theta_dot, v):
+    xhat[0] = v[index]
+    u = np.array([0, theta_dot[index], xhat[0]*np.cos(xhat[1]), xhat[0]*np.sin(xhat[1])])*dt
+    return xhat + u
+
+def get_F(xhat):
+    return np.array([[1, 0, 0, 0],
+                     [0, 1, 0, 0],
+                     [(np.cos(xhat[1]))*dt, (-xhat[0]*np.sin(xhat[1]))*dt, 1, 0],
+                     [(np.sin(xhat[1]))*dt, (xhat[0]*np.cos(xhat[1]))*dt, 0, 1]])
 
 def kalman_filter(gnns_dict, time, theta, v, x, y, theta_dot):
     state = np.zeros((len(time), 4))
