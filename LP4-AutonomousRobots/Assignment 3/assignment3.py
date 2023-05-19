@@ -29,14 +29,22 @@ Q = straight_parameters['Q']
 R = straight_parameters['R']
 is_turning = False
 
-def read_data(file_name, v1, v2, v3):
-    df = pd.read_csv(os.path.join('data', file_name))
-    v1 = df[v1].to_numpy(dtype=np.float64)
-    v2 = df[v2].to_numpy(dtype=np.float64)
-    if v3 != None:
-        v3 = df[v3].to_numpy(dtype=np.float64)
-        return v1, v2, v3
-    return v1, v2
+def read_data(file_name, *variables):
+    try:
+        df = pd.read_csv(os.path.join('data', file_name))
+        data = []
+        for var in variables:
+            if var in df.columns:
+                var_data = df[var].to_numpy(dtype=np.float64)
+                data.append(var_data)
+            else:
+                print(f"Variable '{var}' not found in the CSV file.")
+        return tuple(data)
+    
+    except FileNotFoundError:
+        print(f"File '{file_name}' not found.")
+    except Exception as e:
+        print("An error occurred during data processing:", str(e))
 
 def get_position(theta_dot, velocity):
     num_steps = len(theta_dot)
